@@ -10,17 +10,17 @@ appendCards(data);
 selectSort.addEventListener("change", function (e) {
   if (e.target.value == "inc") {
     console.log("cheap");
-    sortedPriceInc(data1);
+    data1.sort(sortedPriceInc);
   } else if (e.target.value == "dec") {
     console.log("expensive");
-    sortedPriceDec(data1);
+    data1.sort(sortedPriceDec);
   }
   renderSortedCards(data1);
 });
 
 //Sort Price Increase
 function sortedPriceInc(a, b) {
-  return a["price"] - b["price"];
+  return a.price - b.price;
   console.log("cheap-done");
 }
 //Sort Price Decrease
@@ -43,10 +43,7 @@ function appendCards(goods) {
     productsList.insertAdjacentHTML("beforeend", template);
   }
 }
-//Sort by increasing price
-function sortIncreasePrice(goods) {
-  return goods.price;
-}
+
 // Star rating
 function createCardTemplate(goods) {
   let stars = ``;
