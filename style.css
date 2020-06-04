@@ -33,14 +33,17 @@ p {
   width: auto;
   display: block;
   object-fit: contain;
+  margin-top: 20px;
 }
 
 .card-status.green {
   color: green;
 }
+
 .card-status.yellow {
   color: gold;
 }
+
 .card-status.red {
   color: red;
 }

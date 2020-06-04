@@ -18,18 +18,18 @@ selectSort.addEventListener("change", function (e) {
   renderSortedCards(data1);
 });
 
+console.log(typeof selectSort);
+
 //Sort Price Increase
 function sortedPriceInc(a, b) {
   return a.price - b.price;
-  console.log("cheap-done");
 }
 //Sort Price Decrease
 function sortedPriceDec(a, b) {
-  return b["price"] - a["price"];
-  console.log("expensive-done");
+  return b.price - a.price;
 }
 
-//Clear
+//Clear old card and create new
 function renderSortedCards(new_data) {
   productsList.innerHTML = "";
   appendCards(new_data);
