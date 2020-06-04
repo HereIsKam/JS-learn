@@ -1,0 +1,46 @@
+.card-name {
+  height: 70px;
+  margin-bottom: 10px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+.card {
+  height: 100%;
+}
+
+p {
+  height: 50px;
+
+  white-space: wrap;
+  overflow: hidden;
+}
+
+h5,
+h6,
+button,
+p {
+  margin-bottom: 10px;
+}
+
+.card-link {
+  display: block;
+  margin-bottom: 10px;
+}
+
+.card-img-top {
+  height: 200px;
+  width: auto;
+  display: block;
+  object-fit: contain;
+}
+
+.card-status.green {
+  color: green;
+}
+.card-status.yellow {
+  color: gold;
+}
+.card-status.red {
+  color: red;
+}
