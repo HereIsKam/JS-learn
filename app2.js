@@ -2,33 +2,31 @@
 
 const data1 = data;
 const productsList = document.getElementById("goods-list");
-const selectSort = document.getElementById("selectSort")
+const selectSort = document.getElementById("selectSort");
 console.log(data);
-
-/* data.sort(sortedPriceIncrease); */
 appendCards(data);
 
-
-
-
-
-selectSort.addEventListener('change', function (e) {
-  if (e.target.getAttribute.value == 'inc') {
-    console.log('cheap');
-  } else if (e.target.getAttribute.value == 'dec') {
-    console.log('expensive');
+//Sorting by event
+selectSort.addEventListener("change", function (e) {
+  if (e.target.value == "inc") {
+    console.log("cheap");
+    sortedPriceInc(data1);
+  } else if (e.target.value == "dec") {
+    console.log("expensive");
+    sortedPriceDec(data1);
   }
-})
+  renderSortedCards(data1);
+});
 
-//Sort by price
-function sortedPriceIncrease(a, b) {
-  if (selectSort.getAttribute('value') == 'inc') {
-    return a['price'] - b['price'];
-    console.log('cheap');
-  } else if (selectSort.getAttribute('value') == 'dec') {
-    return b['price'] - a['price'];
-    console.log('expensive');
-  }
+//Sort Price Increase
+function sortedPriceInc(a, b) {
+  return a["price"] - b["price"];
+  console.log("cheap-done");
+}
+//Sort Price Decrease
+function sortedPriceDec(a, b) {
+  return b["price"] - a["price"];
+  console.log("expensive-done");
 }
 
 //Clear
