@@ -1,19 +1,39 @@
 "use strict";
 
 const data1 = data;
-const goodsList = document.getElementById("goods-list");
+const productsList = document.getElementById("goods-list");
+const selectSort = document.getElementById("selectSort")
 console.log(data);
 
-appendCards(data1);
+/* data.sort(sortedPriceIncrease); */
+appendCards(data);
 
+
+
+
+
+selectSort.addEventListener('change', function (e) {
+  if (e.target.getAttribute.value == 'inc') {
+    console.log('cheap');
+  } else if (e.target.getAttribute.value == 'dec') {
+    console.log('expensive');
+  }
+})
+
+//Sort by price
 function sortedPriceIncrease(a, b) {
-  if (a > b) return 1;
-  if (a == b) return 0;
-  if (a < b) return -1;
+  if (selectSort.getAttribute('value') == 'inc') {
+    return a['price'] - b['price'];
+    console.log('cheap');
+  } else if (selectSort.getAttribute('value') == 'dec') {
+    return b['price'] - a['price'];
+    console.log('expensive');
+  }
 }
 
+//Clear
 function renderSortedCards(new_data) {
-  goodsList.innerHTML = "";
+  productsList.innerHTML = "";
   appendCards(new_data);
 }
 
@@ -22,7 +42,7 @@ function appendCards(goods) {
   for (let i = 0; i < goods.length; i++) {
     const product = goods[i];
     let template = createCardTemplate(product);
-    goodsList.insertAdjacentHTML("beforeend", template);
+    productsList.insertAdjacentHTML("beforeend", template);
   }
 }
 //Sort by increasing price
