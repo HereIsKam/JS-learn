@@ -16,9 +16,17 @@
     <div class="container">
       <select id="selectSort" class="form-control my-5">
         <option disabled selected>Выберите сортировку</option>
-        <option value="dec">От дорогих</option>
-        <option value="inc">От дешевых</option>
+        <option value="price-dec">От дорогих</option>
+        <option value="price-inc">От дешевых</option>
+        <option value="comments_mark-dec">По рейтингу вниз</option>
+        <option value="comments_mark-inc">По рейтингу вверх</option>
       </select>
+      <form class="form-inline" id="filterForm">
+        <div class="form-group mx-sm-3 mb-2">
+          <input name="term" type="search" class="form-control" id="inputPassword2" placeholder="Search">
+        </div>
+        <button type="submit" class="btn btn-primary mb-2">Confirm</button>
+      </form>
       <div class="row row-cols-3" id="goods-list">
         <!-- <div class="col">
             <div class="card track">

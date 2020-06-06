@@ -1,36 +1,52 @@
 "use strict";
-
+const collator = new Intl.Collator(undefined, {
+  numeric: true
+});
 const data1 = data;
 const productsList = document.getElementById("goods-list");
 const selectSort = document.getElementById("selectSort");
 console.log(data);
+const filterForm = document.getElementById("filterForm");
+
 appendCards(data);
+//Filtering by event
+filterForm.addEventListener("submit", function (e) {
+  e.preventDefault();
+  let value = e.target.term.value;
+  let filteredArray = data1.filter(function (el) {
+    // let result = false;
+    // if (el.brand.includes(value)) {
+    //   result = true
+    // }
+    return el.brand.includes(value);
+  })
+  renderCards(filteredArray);
+  e.target.term.value = '';
+  
+});
 
 //Sorting by event
 selectSort.addEventListener("change", function (e) {
-  if (e.target.value == "inc") {
-    console.log("cheap");
-    data1.sort(sortedPriceInc);
-  } else if (e.target.value == "dec") {
-    console.log("expensive");
-    data1.sort(sortedPriceDec);
-  }
-  renderSortedCards(data1);
+  data1.sort(sortingWrap(e.target.value));
+  renderCards(data1);
 });
 
 console.log(typeof selectSort);
 
-//Sort Price Increase
-function sortedPriceInc(a, b) {
-  return a.price - b.price;
+function sortingWrap(value) {
+  let divider = value.indexOf('-');
+  let key = value.slice(0, divider);
+  let type = value.slice(divider+1);
+  return function (a, b) {
+    if (type == "inc") {
+      return collator.compare(a[key],b[key]);
+    } else {
+      return collator.compare(b[key],a[key]);
+    }
+  }
 }
-//Sort Price Decrease
-function sortedPriceDec(a, b) {
-  return b.price - a.price;
-}
-
 //Clear old card and create new
-function renderSortedCards(new_data) {
+function renderCards(new_data) {
   productsList.innerHTML = "";
   appendCards(new_data);
 }
@@ -152,3 +168,13 @@ selectSort.addEventListener('change', function (e) {
 //   console.log(bla);
 
 // });
+
+
+
+
+let aaa = ['1', '12','13','Ан', 'Же'];
+
+
+console.log(aaa.sort(function (a,b) {
+  return collator.compare(a,b);
+}));
