@@ -47,3 +47,7 @@ p {
 .card-status.red {
   color: red;
 }
+
+.form-column {
+  margin: 48px 15px 0 15px;
+}

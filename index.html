@@ -12,35 +12,31 @@
 
 <body>
   <section class="masonry">
-
-    <div class="container">
-      <select id="selectSort" class="form-control my-5">
-        <option disabled selected>Выберите сортировку</option>
-        <option value="price-dec">От дорогих</option>
-        <option value="price-inc">От дешевых</option>
-        <option value="comments_mark-dec">По рейтингу вниз</option>
-        <option value="comments_mark-inc">По рейтингу вверх</option>
-      </select>
-      <form class="form-inline" id="filterForm">
-        <div class="form-group mx-sm-3 mb-2">
-          <input name="term" type="search" class="form-control" id="inputPassword2" placeholder="Search">
+    <div class="container ">
+      <div class="row justify-content-between">
+        <div class="col-2">
+          <form class="form-column" id="filterList">
+            <!-- Brand list here-->
+          </form>
         </div>
-        <button type="submit" class="btn btn-primary mb-2">Confirm</button>
-      </form>
-      <div class="row row-cols-3" id="goods-list">
-        <!-- <div class="col">
-            <div class="card track">
-              <img src="..." class="card-img-top" alt="..." />
-              <div class="card-body">
-                <h5 class="card-title card-album">Album - track</h5>
-                <h6 class="card-title card-artist">Artist (genre)</h6>
-                <small class="card-track-id">trackId</small>
-                <a class="card-link" href="link apple">link apple</a>
-                <h5 class="card-title card-price">Price</h5>
-                <button class="btn btn-success buy-btn">Buy</button>
-              </div>
+        <div class="workspace col-10">
+          <select id="selectSort" class="form-control my-5">
+            <option disabled selected>Выберите сортировку</option>
+            <option value="price-dec">От дорогих к дешевым</option>
+            <option value="price-inc">От дешевых к дорогим</option>
+            <option value="comments_mark-dec">По рейтингу вниз</option>
+            <option value="comments_mark-inc">По рейтингу вверх</option>
+          </select>
+          <form class="form-inline" id="filterForm">
+            <div class="form-group mx-sm-3 mb-2">
+              <input name="term" type="search" class="form-control" id="inputPassword2" placeholder="Search">
             </div>
-          </div> -->
+            <button type="submit" class="btn btn-primary mb-2">Confirm</button>
+          </form>
+          <div class="row row-cols-3" id="products-list">
+            <!-- Cards list here -->
+          </div>
+        </div>
       </div>
     </div>
   </section>
