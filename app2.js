@@ -7,18 +7,44 @@ const productsList = document.getElementById("products-list");
 const selectSort = document.getElementById("selectSort");
 console.log(data);
 const filterForm = document.getElementById("filterForm");
-const brandsList = document.getElementById("filterList");
+const brandsList = document.getElementById("brandList");
 
 appendCards(data);
 appendBrandList(data);
 
-brandsList.addEventListener("change", sortByBrand);
 
-function sortByBrand(e) {
-  e.preventDefault();
+//Sorting by price or rating, select change
+selectSort.addEventListener("change", function (e) {
+  data1.sort(sortingWrap(e.target.value));
+  renderCards(data1);
+});
+
+brandsList.addEventListener("change", function (e) {
+  if (e.target.value == data1.brand) {
+    sortByBrand(data1, e.target.value)
+    console.log(e.target.value)
+    renderCards(data1)
+  }
+});
+
+//Sort by brand name
+function sortByBrand(cards, brandName) {
+  const brands = cards.reduce(function (prevValue, currValue) {
+    const {
+      brand
+    } = currValue;
+    if (prevValue == brandName) {
+      prevValue.push(brand)
+    }
+    return prevValue
+  }, [])
+  brands.forEach(function (brand) {
+    const template = createBrandBody(brand);
+    productsList.insertAdjacentHTML("beforeend", template);
+  })
 }
 
-//Filtering by key
+//Search by name
 filterForm.addEventListener("submit", function (e) {
   e.preventDefault();
   let value = e.target.term.value;
@@ -33,13 +59,7 @@ filterForm.addEventListener("submit", function (e) {
   e.target.term.value = "";
 });
 
-//Sorting by name or price
-selectSort.addEventListener("change", function (e) {
-  data1.sort(sortingWrap(e.target.value));
-  renderCards(data1);
-});
-
-//Sorting function
+//Sorting function by price or rating
 function sortingWrap(value) {
   let divider = value.indexOf("-");
   let key = value.slice(0, divider);
@@ -59,36 +79,44 @@ function renderCards(new_data) {
   appendCards(new_data);
 }
 
+
+
 // Creating brand-checkbox list
 function appendBrandList(cards) {
-  // const brands = cards.reduce(function (prevValue, currValue) {
-  //   const { brand } = currValue;
-  //   if (!prevValue.includes(brand)) {
-  //     prevValue.push(brand);
-  //     prevValue.sort();
-  //   }
-  //   return prevValue;
-  // }, []);
-  // brands.forEach(function (brand) {
-  //   const template = createBrandBody(brand);
-  //   brandsList.insertAdjacentHTML("beforeend", template);
-  // });
-
-  const brands = cards.map((card) => card.brand);
-  const brandsSet = new Set(brands);
-  const brandsUniсue = Array.from(brandsSet).sort();
-  brandsUniсue.forEach((brand) => {
+  const brands = cards.reduce(function (prevValue, currValue) {
+    const {
+      brand
+    } = currValue;
+    if (!prevValue.includes(brand)) {
+      prevValue.push(brand);
+      prevValue.sort();
+    }
+    return prevValue;
+  }, []);
+  brands.forEach(function (brand) {
     const template = createBrandBody(brand);
     brandsList.insertAdjacentHTML("beforeend", template);
   });
+
+  // const brands = cards.map(function (card) {
+  //   return card.brand;
+  // });
+  // const brandsSet = new Set(brands);
+  // const brandsUniсue = Array.from(brandsSet).sort();
+  // brandsUniсue.forEach(function (brand) {
+  //   const template = createBrandBody(brand);
+  //   brandsList.insertAdjacentHTML("beforeend", template);
+  // });
 }
+
+
 
 //Creating brand-checkbox body
 function createBrandBody(brand) {
   let html = `<div class="form-check d-flex flex-column" id="filterBrandCheckbox">
-  <input class="form-check-input" type="checkbox" value="" id="defaultCheck1">
+  <input class="form-check-input" type="checkbox" value="${brand}" id="defaultCheck1">
   <label class="form-check-label" for="defaultCheck1">
-    ${brand}
+    ${brand}(${brand.length})
   </label>
 </div>`;
   return html;
