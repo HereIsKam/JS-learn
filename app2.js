@@ -7,11 +7,35 @@ const productsList = document.getElementById("products-list");
 const selectSort = document.getElementById("selectSort");
 console.log(data);
 const filterForm = document.getElementById("filterForm");
-const brandsList = document.getElementById("brandList");
+const filterBrands = document.getElementById("filterBrands");
+const filterBtn = document.getElementById("filterBtn");
+const filterObj = {
+  brands: {},
+  prices: {from: 0, to: 0},
+};
+if (!localStorage.wish) {
+  localStorage.wish = JSON.stringify({});
+}
+const LSwish = JSON.parse(localStorage.wish);
+
+
+
 
 appendCards(data);
 appendBrandList(data);
 
+
+productsList.addEventListener('click', function (e) {
+  if (e.target.classList.contains('wish-btn')) {
+    let id = e.target.dataset.id;
+    if (LSwish[id]) {
+      delete LSwish[id];
+    } else{
+      LSwish[id] = true;
+    }
+    localStorage.wish = JSON.stringify(LSwish);
+  }
+})
 
 //Sorting by price or rating, select change
 selectSort.addEventListener("change", function (e) {
@@ -19,44 +43,52 @@ selectSort.addEventListener("change", function (e) {
   renderCards(data1);
 });
 
-brandsList.addEventListener("change", function (e) {
-  if (e.target.value == data1.brand) {
-    sortByBrand(data1, e.target.value)
-    console.log(e.target.value)
-    renderCards(data1)
+
+filterBrands.addEventListener("change", function (e) {
+  if (!e.target.checked) {
+    delete filterObj.brands[e.target.value]
+  } else{
+    filterObj.brands[e.target.value] = true;
   }
+  // if (e.target.value == data1.brand) {
+  //   sortByBrand(data1, e.target.value)
+  //   console.log(e.target.value)
+  //   renderCards(data1)
+  // }
+  console.log(filterObj);
+  
 });
 
 //Sort by brand name
-function sortByBrand(cards, brandName) {
-  const brands = cards.reduce(function (prevValue, currValue) {
-    const {
-      brand
-    } = currValue;
-    if (prevValue == brandName) {
-      prevValue.push(brand)
-    }
-    return prevValue
-  }, [])
-  brands.forEach(function (brand) {
-    const template = createBrandBody(brand);
-    productsList.insertAdjacentHTML("beforeend", template);
-  })
-}
+// function sortByBrand(cards, brandName) {
+//   const brands = cards.reduce(function (prevValue, currValue) {
+//     const {
+//       brand
+//     } = currValue;
+//     if (prevValue == brandName) {
+//       prevValue.push(brand)
+//     }
+//     return prevValue
+//   }, [])
+//   brands.forEach(function (brand) {
+//     const template = createBrandBody(brand);
+//     productsList.insertAdjacentHTML("beforeend", template);
+//   })
+// }
 
 //Search by name
-filterForm.addEventListener("submit", function (e) {
-  e.preventDefault();
-  let value = e.target.term.value;
+filterBtn.addEventListener("click", function (e) {
   let filteredArray = data1.filter(function (el) {
-    return (
-      el.brand.includes(value) ||
-      el.title.includes(value) ||
-      el.docket.includes(value)
-    );
+    let answer = false;
+    let brands = Object.keys(filterObj.brands).length ? Object.keys(filterObj.brands).includes(el.brand) : true;
+
+    if (brands) {
+      answer = true;
+    }
+
+    return answer;
   });
   renderCards(filteredArray);
-  e.target.term.value = "";
 });
 
 //Sorting function by price or rating
@@ -83,30 +115,22 @@ function renderCards(new_data) {
 
 // Creating brand-checkbox list
 function appendBrandList(cards) {
-  const brands = cards.reduce(function (prevValue, currValue) {
-    const {
-      brand
-    } = currValue;
-    if (!prevValue.includes(brand)) {
-      prevValue.push(brand);
-      prevValue.sort();
+   const brandsMap = new Map();
+  cards.forEach(function (card) {
+    let brand = card.brand;
+    if (!brandsMap.has(brand)) {
+      brandsMap.set(brand, 1)
+    } else{
+      brandsMap.set(brand, brandsMap.get(brand) + 1)
     }
-    return prevValue;
-  }, []);
-  brands.forEach(function (brand) {
-    const template = createBrandBody(brand);
-    brandsList.insertAdjacentHTML("beforeend", template);
   });
-
-  // const brands = cards.map(function (card) {
-  //   return card.brand;
-  // });
-  // const brandsSet = new Set(brands);
-  // const brandsUniсue = Array.from(brandsSet).sort();
-  // brandsUniсue.forEach(function (brand) {
-  //   const template = createBrandBody(brand);
-  //   brandsList.insertAdjacentHTML("beforeend", template);
-  // });
+  
+  const brandsUniсue = Array.from(brandsMap).sort();
+  
+  brandsUniсue.forEach(function (brand) {
+    const template = createBrandBody(brand);
+    filterBrands.insertAdjacentHTML("beforeend", template);
+  });
 }
 
 
@@ -114,9 +138,9 @@ function appendBrandList(cards) {
 //Creating brand-checkbox body
 function createBrandBody(brand) {
   let html = `<div class="form-check d-flex flex-column" id="filterBrandCheckbox">
-  <input class="form-check-input" type="checkbox" value="${brand}" id="defaultCheck1">
-  <label class="form-check-label" for="defaultCheck1">
-    ${brand}(${brand.length})
+  <input class="form-check-input" type="checkbox" name="${brand[0]}" value="${brand[0]}" id="filter-${brand[0]}">
+  <label class="form-check-label" for="filter-${brand[0]}">
+    ${brand[0]}(${brand[1]})
   </label>
 </div>`;
   return html;
@@ -162,37 +186,42 @@ function createCardTemplate(products) {
     <div class="card track">
       <img src="${products.images.preview}" class="card-img-top" alt="Artwork ${
     products.title
-  } - ${products.brand}" />
+    } - ${products.brand}" />
       <div class="card-body">
         <h5 class="card-title card-name">${products.title}</h5>
         <h6 class="card-title card-rating">Rating: ${stars}</h6>
         ${
-          products.brand
-            ? `<h6 class="card-title card-brand">Brand: ${products.brand}</h6>`
-            : ``
-        }
+    products.brand
+      ? `<h6 class="card-title card-brand">Brand: ${products.brand}</h6>`
+      : ``
+    }
         ${products.docket ? `<p class="card-desc">${products.docket}</p>` : ``}
         <h6 class="card-title card-category">Categoty: ${
-          products.category_title || "Ноутбук"
-        }</h6>
+    products.category_title || "Ноутбук"
+    }</h6>
         <a class="card-link" href="${products.href}">View on Rozetka:</a>
         <h6 class="card-title card-status ${sell_status_class}">${sell_status_text}</h6>
         ${
-          products.old_price != 0
-            ? `<h6 class="card-title card-price-old">Old price ${products.old_price} UAH</h6> `
-            : ``
-        }
+    products.old_price != 0
+      ? `<h6 class="card-title card-price-old">Old price ${products.old_price} UAH</h6> `
+      : ``
+    }
         <h6 class="card-title card-price">New price: ${products.price} UAH</h6>
         <h6 class="card-title card-discount">Discount: ${
-          products.discount
-        }%</h6>
+    products.discount
+    }%</h6>
         <h6 class="card-title card-id">Item Number: ${products.id}</h6>
         <h6 class="card-title card-comments">Comments: ${
-          products.comments_amount
-        }</h6>
+    products.comments_amount
+    }</h6>
         <button class="btn btn-success buy-btn">Buy</button>
+        <button class="btn btn-primary wish-btn" data-id="${products.id}">&#10084;</button>
       </div>
     </div>
   </div>`;
   return html;
 }
+
+let str111 = "Экран 15.6\" IPS (1920x1080) Full HD, матовый / Intel Core i5-9300H (2.4 - 4.1 ГГц) / RAM 8 ГБ / SSD 256 ГБ / nVidia GeForce GTX 1650, 4 ГБ / без ОД / LAN / Wi-Fi / Bluetooth / веб-камера / DOS / 2.32 кг / черный";
+
+console.log(str111.split('/'));
