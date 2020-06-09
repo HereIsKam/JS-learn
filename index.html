@@ -20,11 +20,25 @@
     <section class="masonry">
       <div class="container">
         <div class="row justify-content-between">
-          <div class="col-2">
-            <form class="form-column" name="filterBrands" id="filterBrands">
+          <div class="col-2 d-flex flex-column align-items-start">
+            <form
+              class="form-column filter-brands"
+              name="filterBrands"
+              id="filterBrands"
+            >
               <!-- Brand list here-->
             </form>
-            <button class="btn btn-success mt-3" id="filterBtn">Фильтровать</button>
+            <form
+              class="form-column filter-price d-flex flex-column align-items-start"
+              name="filterPrice"
+              id="filterPrice"
+            >
+              <!-- Price filter here-->
+            </form>
+
+            <button class="btn btn-success mt-3 ml-3 btn-filter" id="filterBtn">
+              Фильтровать
+            </button>
           </div>
           <div class="workspace col-10">
             <select id="selectSort" class="form-control my-5">
