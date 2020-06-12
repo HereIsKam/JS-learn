@@ -17,6 +17,47 @@
   </head>
 
   <body>
+    <section class="cart-wrap">
+      <div class="container">
+        <div class="cart border p-5 my-5" id="cart">
+          <div class="cart-header border p-3 mb-3">
+            <div class="row">
+              <div class="col-1">#</div>
+              <div class="col-1">Img</div>
+              <div class="col-4">Title</div>
+              <div class="col-2">Price</div>
+              <div class="col-1">Count</div>
+              <div class="col-2">Sum</div>
+              <div class="col-1">Remove</div>
+            </div>
+          </div>
+          <style>
+            .cart-body{
+              max-height: 300px;
+              overflow-y: auto;
+            }
+          </style>
+          <div class="cart-body border p-3" id="cartBody">
+            <!-- <div class="row cart-row mb-3">
+              <div class="col-1 cart-row-number">1</div>
+              <div class="col-1 cart-row-img">
+                <img src="" alt="" class="img-fluid">
+              </div>
+              <h6 class="col-4 cart-row-title">Title</h6>
+              <div class="col-2 cart-row-price">300</div>
+              <div class="col-1 cart-row-count">
+                <input type="number" value="1" min="1" max="99">
+              </div>
+              <div class="col-2 cart-row-sum">300</div>
+              <div class="col-1 cart-row-remove">
+                <button class="btn btn-danger btn-sm">&times;</button>
+              </div>
+            </div> -->
+          </div>
+          <div class="cart-footer"></div>
+        </div>
+      </div>
+    </section>
     <section class="masonry">
       <div class="container">
         <div class="row justify-content-between">
