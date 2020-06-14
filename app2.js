@@ -12,10 +12,21 @@ const filterForm = document.getElementById("filterForm");
 const filterBrands = document.getElementById("filterBrands");
 const filterBtn = document.getElementById("filterBtn");
 const filterPrice = document.getElementById("filterPrice");
+const priceArray = [];
 const filterObj = {
   brands: {},
-  prices: { from: 0, to: 0 },
+  // prices: {
+  //   from: priceFrom,
+  //   to: priceTo,
+  // },
 };
+let priceFrom = document.getElementsByName('priceFilterFrom');
+let priceTo = document.getElementsByName('priceFilterTo')
+console.log(priceFrom);
+console.log(priceTo);
+
+
+
 //creating local storage
 if (!localStorage.wish) {
   localStorage.wish = JSON.stringify({});
@@ -24,6 +35,7 @@ const LSwish = JSON.parse(localStorage.wish);
 
 appendCards(data);
 appendBrandList(data);
+appendPriceRange(data1, priceArray);
 
 //Adding item to wish-list
 productsList.addEventListener("click", function (e) {
@@ -57,9 +69,9 @@ filterBrands.addEventListener("change", function (e) {
 filterBtn.addEventListener("click", function (e) {
   let filteredArray = data1.filter(function (el) {
     let answer = false;
-    let brands = Object.keys(filterObj.brands).length
-      ? Object.keys(filterObj.brands).includes(el.brand)
-      : true;
+    let brands = Object.keys(filterObj.brands).length ?
+      Object.keys(filterObj.brands).includes(el.brand) :
+      true;
     if (brands) {
       answer = true;
     }
@@ -105,35 +117,38 @@ function appendBrandList(cards) {
     filterBrands.insertAdjacentHTML("beforeend", template);
   });
 }
-appendPriceRange(data1);
 
-function appendPriceRange(cards) {
-  const priceMap = new Map();
-  cards.forEach(function (card) {
-    let price = card.price;
-    if (!priceMap.has(price)) {
-      priceMap.set(price, 1);
-    } else {
-      priceMap.set(price, priceMap.get(price) + 1);
-    }
-  });
-  const priceArray = Array.from(priceMap);
-  const prices = [];
-  priceArray.forEach(function (el) {
-    prices.push(el[0]);
-  });
-  console.log(prices.sort());
+//Creating price range
+function appendPriceRange(cards, array) {
 
-  //const template = createPriceRange(prices);
-  //filterPrice.insertAdjacentHTML("beforeend", template);
+  // array = cards.map(item => item.price)
+  // array.sort(function (a, b) {
+  //   if (a > b) return 1;
+  //   if (a == b) return 0;
+  //   if (a < b) return -1;
+  // })
+  // console.log(array)
+  // const template = createPriceRange(cards);
+  // filterPrice.insertAdjacentHTML("beforeend", template);
+
+  cards.forEach(function (el) {
+    array.push(el.price)
+  })
+  array.sort(function (a, b) {
+    if (a > b) return 1;
+    if (a == b) return 0;
+    if (a < b) return -1;
+  })
+  const template = createPriceRange(cards);
+  filterPrice.insertAdjacentHTML("beforeend", template);
 }
 
-//Creating price filter's range
+// Creating price filter's range
 function createPriceRange(price) {
   let html = `<label class="fiter-price">Цена от</label>
-  <input class="filter-prece-from" placeholder="${price.min()}"></input>
+  <input class="filter-price-from" placeholder="${priceArray[0]}" type="number" value="${priceArray[0]}" min="${priceArray[0]}" max="${priceArray[price.length - 1]}" name="priceFilterFrom"></input>
   <label class="fiter-price">до</label>
-  <input class="filter-prece-to" placeholder="${price.max()}"></input>`;
+  <input class="filter-price-to" placeholder="${priceArray[price.length - 1]}" type="number" value="${priceArray[price.length - 1]}" min="${priceArray[1]}" max="${priceArray[price.length - 1]}" name="priceFilterTo"></input>`;
   return html;
 }
 
@@ -188,38 +203,40 @@ function createCardTemplate(products) {
     <div class="card track" data-id="${products.id}">
       <img src="${products.images.preview}" class="card-img-top" alt="Artwork ${
     products.title
-    } - ${products.brand}" />
+  } - ${products.brand}" />
       <div class="card-body">
         <h5 class="card-title card-name">${products.title}</h5>
         <h6 class="card-title card-rating">Rating: ${stars}</h6>
         ${
-    products.brand
-      ? `<h6 class="card-title card-brand">Brand: ${products.brand}</h6>`
-      : ``
-    }
+          products.brand
+            ? `<h6 class="card-title card-brand">Brand: ${products.brand}</h6>`
+            : ``
+        }
         ${products.docket ? `<p class="card-desc">${products.docket}</p>` : ``}
         <h6 class="card-title card-category">Categoty: ${
-    products.category_title || "Ноутбук"
-    }</h6>
+          products.category_title || "Ноутбук"
+        }</h6>
         <a class="card-link" href="${products.href}">View on Rozetka:</a>
         <h6 class="card-title card-status ${sell_status_class}">${sell_status_text}</h6>
         ${
-    products.old_price != 0
-      ? `<h6 class="card-title card-price-old">Old price ${products.old_price} UAH</h6> `
-      : ``
-    }
-        <h6 class="card-title card-price" data-price="${products.price}">New price: ${products.price} UAH</h6>
+          products.old_price != 0
+            ? `<h6 class="card-title card-price-old">Old price ${products.old_price} UAH</h6> `
+            : ``
+        }
+        <h6 class="card-title card-price" data-price="${
+          products.price
+        }">New price: ${products.price} UAH</h6>
         <h6 class="card-title card-discount">Discount: ${
-    products.discount
-    }%</h6>
+          products.discount
+        }%</h6>
         <h6 class="card-title card-id">Item Number: ${products.id}</h6>
         <h6 class="card-title card-comments">Comments: ${
-    products.comments_amount
-    }</h6>
+          products.comments_amount
+        }</h6>
         <button class="btn btn-success buy-btn">Buy</button>
         <button class="btn btn-primary wish-btn" data-id="${
-    products.id
-    }">&#10084;</button>
+          products.id
+        }">&#10084;</button>
       </div>
     </div>
   </div>`;
@@ -229,56 +246,55 @@ function createCardTemplate(products) {
 let str111 =
   'Экран 15.6" IPS (1920x1080) Full HD, матовый / Intel Core i5-9300H (2.4 - 4.1 ГГц) / RAM 8 ГБ / SSD 256 ГБ / nVidia GeForce GTX 1650, 4 ГБ / без ОД / LAN / Wi-Fi / Bluetooth / веб-камера / DOS / 2.32 кг / черный';
 
-
-
 productsList.addEventListener("click", function (e) {
   if (e.target.classList.contains("buy-btn")) {
     const btn = e.target;
-    btn.classList.add('disabled')
-    btn.disabled = true
-    btn.textContent = 'В корзине'
-    const card = btn.closest('.card');
-    const img = card.querySelector('.card-img-top')
-    const title = card.querySelector('.card-name')
-    const price = card.querySelector('.card-price')
+    btn.classList.add("disabled");
+    btn.disabled = true;
+    btn.textContent = "В корзине";
+    const card = btn.closest(".card");
+    const img = card.querySelector(".card-img-top");
+    const title = card.querySelector(".card-name");
+    const price = card.querySelector(".card-price");
 
     const product = {};
     product.id = card.dataset.id;
     product.img = img.src;
     product.title = title.textContent;
-    product.price = price.dataset.price
+    product.price = price.dataset.price;
 
     renderCartRow(cartBody, product);
-    refreshCartRowNumber(cartBody)
+    refreshCartRowNumber(cartBody);
   }
 });
-cartBody.addEventListener('input', function (e) {
-  if (e.target.classList.contains('count-input')) {
-    const input = e.target
+cartBody.addEventListener("input", function (e) {
+  if (e.target.classList.contains("count-input")) {
+    const input = e.target;
     if (input.value < 1) {
-      input.value = 1
-    } else if (input.value > 99){
-      input.value = 99
+      input.value = 1;
+    } else if (input.value > 99) {
+      input.value = 99;
     }
-    const parentRow = input.closest('.cart-row');
-    let price = parentRow.querySelector('.cart-row-price').dataset.price
-    const sum = parentRow.querySelector('.cart-row-sum')
-    sum.textContent = +input.value * +price
+    const parentRow = input.closest(".cart-row");
+    let price = parentRow.querySelector(".cart-row-price").dataset.price;
+    const sum = parentRow.querySelector(".cart-row-sum");
+    sum.textContent = +input.value * +price;
   }
-})
+});
 cartBody.addEventListener("click", function (e) {
   if (e.target.classList.contains("cart-row-remove-btn")) {
-    const parentRow = e.target.closest('.cart-row');
+    const parentRow = e.target.closest(".cart-row");
     parentRow.remove();
-    refreshCartRowNumber(this)
+    refreshCartRowNumber(this);
     let id = parentRow.dataset.id;
-    const card = productsList.querySelector(`.card[data-id="${id}"]`)
-    const cardBuyBtn = card.querySelector('.buy-btn')
-    cardBuyBtn.textContent = 'Buy'
-    cardBuyBtn.disabled = false
-    cardBuyBtn.classList.remove('disabled')
+    const card = productsList.querySelector(`.card[data-id="${id}"]`);
+    const cardBuyBtn = card.querySelector(".buy-btn");
+    cardBuyBtn.textContent = "Buy";
+    cardBuyBtn.disabled = false;
+    cardBuyBtn.classList.remove("disabled");
   }
-})
+});
+
 function renderCartRow(id, data) {
   let template = `<div class="row cart-row mb-3" data-id="${data.id}">
     <div class="col-1 cart-row-number">1</div>
@@ -295,13 +311,13 @@ function renderCartRow(id, data) {
       <button class="btn btn-danger btn-sm cart-row-remove-btn">&times;</button>
     </div>
   </div>`;
-  id.insertAdjacentHTML('beforeend', template)
-}
-function refreshCartRowNumber(id) {
-  const rows = id.children
-  for (let i = 0; i < rows.length; i++) {
-    const element = rows[i];
-    element.querySelector('.cart-row-number').textContent = i+1
-  }
+  id.insertAdjacentHTML("beforeend", template);
 }
 
+function refreshCartRowNumber(id) {
+  const rows = id.children;
+  for (let i = 0; i < rows.length; i++) {
+    const element = rows[i];
+    element.querySelector(".cart-row-number").textContent = i + 1;
+  }
+}
