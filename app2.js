@@ -33,30 +33,29 @@ appendCards(data);
 appendBrandList(data);
 appendPriceRange(data1, priceArray);
 
-let count = +document.querySelector(`.wish-list`).dataset.count;
-console.log(count)
+
+
 //Adding item to wish-list
 productsList.addEventListener("click", function (e) {
+  e.preventDefault();
   if (e.target.classList.contains("wish-btn")) {
     let id = e.target.dataset.id;
     const LSwish = JSON.parse(localStorage.wish);
-
+    const button = document.querySelector(`.wish-list`);
+    let count = +button.dataset.count;
     if (!LSwish[id]) {
       LSwish[id] = true;
-      e.target.classList.remove(`btn-primary`)
-      e.target.classList.add(`btn-danger`)
-      count = Number(count) + 1
-      console.log(count)
+      e.target.classList.remove(`btn-primary`);
+      e.target.classList.add(`btn-danger`);
+      // button.setAttribute('data-count', count + 1);
     } else {
       delete LSwish[id];
-      e.target.classList.add(`btn-primary`)
-      e.target.classList.remove(`btn-danger`)
-      count = count - 1
-      console.log(count)
+      e.target.classList.add(`btn-primary`);
+      e.target.classList.remove(`btn-danger`);
+      // button.setAttribute('data-count', count - 1);
     }
     localStorage.wish = JSON.stringify(LSwish);
   }
-
 });
 
 //Sorting by price or rating, event
