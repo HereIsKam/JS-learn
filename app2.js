@@ -7,7 +7,6 @@ const collator = new Intl.Collator(undefined, {
 const data1 = data;
 const productsList = document.getElementById("products-list");
 const selectSort = document.getElementById("selectSort");
-// console.log(data);
 const filterForm = document.getElementById("filterForm");
 const filterBrands = document.getElementById("filterBrands");
 const filterBtn = document.getElementById("filterBtn");
@@ -21,66 +20,49 @@ const filterObj = {
   },
 };
 
-
+const wishListButton = document.getElementById(`wish-list`);
 
 //creating local storage
 if (!localStorage.wish) {
   localStorage.wish = JSON.stringify({});
 }
 const wishList = JSON.parse(localStorage.wish);
-const wishListButton = document.getElementById(`wish-list`);
-wishListCounter(wishList, wishListButton, `data-count`);
 
-
+//Calling functions
+wishListCounter(wishList, wishListButton);
 appendCards(data);
 appendBrandList(data);
 appendPriceRange(data1, priceArray);
 
 
-
 //Adding item to wish-list
-productsList.addEventListener("click", wishListAddRemove(wishList, `wish-btn`, `btn-danger`, `btn-primary`) );
+productsList.addEventListener("click", wishListAddRemove(wishList, ));
 
-function wishListCounter(object, indicator, data_attribute) {
+//Wishlist counter
+function wishListCounter(object, indicator) {
   let storageLength = Object.entries(object).length;
-  indicator.setAttribute(data_attribute, storageLength);
+  indicator.setAttribute(`data-count`, storageLength);
 }
 
-
-
-function wishListAddRemove(object, class_visible_area, highlight, non_highlight) {
+//Wishlist adding/removing
+function wishListAddRemove(object) {
   return function (e) {
-    if (e.target.classList.contains(class_visible_area)) {
+    if (e.target.classList.contains(`wish-btn`)) {
       let id = e.target.dataset.id;
-
       if (!object[id]) {
         object[id] = true;
-        e.target.classList.remove(non_highlight);
-        e.target.classList.add(highlight);
+        e.target.classList.remove(`btn-primary`);
+        e.target.classList.add(`btn-danger`);
       } else {
         delete object[id];
-        e.target.classList.add(non_highlight);
-        e.target.classList.remove(highlight);
+        e.target.classList.add(`btn-primary`);
+        e.target.classList.remove(`btn-danger`);
       }
       localStorage.wish = JSON.stringify(object);
     }
     wishListCounter(object, wishListButton, `data-count`);
   }
 }
-
-//
-// if (!localStorage.wish) {
-//   localStorage.wish = JSON.stringify({});
-// }
-
-// const wishList = JSON.parse(localStorage.wish);
-// console.log(wishList);
-//
-// console.log(storageLength);
-
-
-
-
 
 //Sorting by price or rating, event
 selectSort.addEventListener("change", function (e) {
@@ -245,9 +227,6 @@ function createCardTemplate(products) {
             : ``
         }
         ${products.docket ? `<p class="card-desc">${products.docket}</p>` : ``}
-        <h6 class="card-title card-category">Categoty: ${
-          products.category_title || "Ноутбук"
-        }</h6>
         <a class="card-link" href="${products.href}">View on Rozetka:</a>
         <h6 class="card-title card-status ${sell_status_class}">${sell_status_text}</h6>
         ${
@@ -262,9 +241,7 @@ function createCardTemplate(products) {
           products.discount
         }%</h6>
         <h6 class="card-title card-id">Item Number: ${products.id}</h6>
-        <h6 class="card-title card-comments">Comments: ${
-          products.comments_amount
-        }</h6>
+        <h6 class="card-title card-comments">Comments: ${products.comments_amount}</h6>
         <div class="d-flex align-items-center">
         <button class="btn btn-success buy-btn mr-2 border-0">Buy</button>
         <button class="btn ${wishList[products.id] ? 'btn-danger' : 'btn-primary'} wish-btn border-0 text-center" data-id="${

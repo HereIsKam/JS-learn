@@ -1,44 +1,38 @@
 <!DOCTYPE html>
 <html lang="ru">
-  <head>
-    <meta charset="UTF-8" />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1, shrink-to-fit=no"
-    />
-    <link
-      rel="stylesheet"
-      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
-      integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk"
-      crossorigin="anonymous"
-    />
-    <title>JS</title>
-    <link rel="stylesheet" href="style.css" />
-  </head>
 
-  <body>
-    <section class="cart-wrap">
-      <div class="container">
-        <div class="cart border p-5 my-5" id="cart">
-          <div class="cart-header border p-3 mb-3">
-            <div class="row">
-              <div class="col-1">#</div>
-              <div class="col-1">Img</div>
-              <div class="col-4">Title</div>
-              <div class="col-2">Price</div>
-              <div class="col-1">Count</div>
-              <div class="col-2">Sum</div>
-              <div class="col-1">Remove</div>
-            </div>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
+    integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous" />
+  <title>JS</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+  <section class="cart-wrap">
+    <div class="container">
+      <div class="cart border p-5 my-5" id="cart">
+        <div class="cart-header border p-3 mb-3">
+          <div class="row">
+            <div class="col-1">#</div>
+            <div class="col-1">Img</div>
+            <div class="col-4">Title</div>
+            <div class="col-2">Price</div>
+            <div class="col-1">Count</div>
+            <div class="col-2">Sum</div>
+            <div class="col-1">Remove</div>
           </div>
-          <style>
-            .cart-body {
-              max-height: 300px;
-              overflow-y: auto;
-            }
-          </style>
-          <div class="cart-body border p-3" id="cartBody">
-            <!-- <div class="row cart-row mb-3">
+        </div>
+        <style>
+          .cart-body {
+            max-height: 300px;
+            overflow-y: auto;
+          }
+        </style>
+        <div class="cart-body border p-3" id="cartBody">
+          <!-- <div class="row cart-row mb-3">
               <div class="col-1 cart-row-number">1</div>
               <div class="col-1 cart-row-img">
                 <img src="" alt="" class="img-fluid">
@@ -53,51 +47,39 @@
                 <button class="btn btn-danger btn-sm">&times;</button>
               </div>
             </div> -->
-          </div>
-          <div class="cart-footer"></div>
         </div>
+        <div class="cart-footer"></div>
       </div>
-    </section>
-    <section class="masonry">
-      <div class="container">
-        <div class="row justify-content-between">
-          <div class="col-2 d-flex flex-column align-items-start">
-            <button
-              class="btn btn-primary wish-list"
-              name="wishList"
-              data-count=""
-              id="wish-list"
-            >
-              Избранное
-            </button>
-            <form
-              class="form-column filter-brands"
-              name="filterBrands"
-              id="filterBrands"
-            >
-              <!-- Brand list here-->
-            </form>
-            <form
-              class="form-column filter-price d-flex flex-column align-items-start"
-              name="filterPrice"
-              id="filterPrice"
-            >
-              <!-- Price filter here-->
-            </form>
+    </div>
+  </section>
+  <section class="masonry">
+    <div class="container">
+      <div class="row justify-content-between">
+        <div class="col-2 d-flex flex-column align-items-start">
+          <button class="btn btn-primary wish-list" name="wishList" data-count="" id="wish-list">
+            Избранное
+          </button>
+          <form class="form-column filter-brands" name="filterBrands" id="filterBrands">
+            <!-- Brand list here-->
+          </form>
+          <form class="form-column filter-price d-flex flex-column align-items-start" name="filterPrice"
+            id="filterPrice">
+            <!-- Price filter here-->
+          </form>
 
-            <button class="btn btn-success mt-3 ml-3 btn-filter" id="filterBtn">
-              Фильтровать
-            </button>
-          </div>
-          <div class="workspace col-10">
-            <select id="selectSort" class="form-control my-5">
-              <option disabled selected>Выберите сортировку</option>
-              <option value="price-dec">От дорогих к дешевым</option>
-              <option value="price-inc">От дешевых к дорогим</option>
-              <option value="comments_mark-dec">По рейтингу вниз</option>
-              <option value="comments_mark-inc">По рейтингу вверх</option>
-            </select>
-            <!-- <form class="form-inline" id="filterForm">
+          <button class="btn btn-success mt-3 ml-3 btn-filter" id="filterBtn">
+            Фильтровать
+          </button>
+        </div>
+        <div class="workspace col-10">
+          <select id="selectSort" class="form-control mb-5">
+            <option disabled selected>Выберите сортировку</option>
+            <option value="price-dec">От дорогих к дешевым</option>
+            <option value="price-inc">От дешевых к дорогим</option>
+            <option value="comments_mark-dec">По рейтингу вниз</option>
+            <option value="comments_mark-inc">По рейтингу вверх</option>
+          </select>
+          <!-- <form class="form-inline" id="filterForm">
               <div class="form-group mx-sm-3 mb-2">
                 <input
                   name="term"
@@ -111,30 +93,25 @@
                 Confirm
               </button>
             </form> -->
-            <div class="row row-cols-3" id="products-list">
-              <!-- Cards list here -->
-            </div>
+          <div class="row row-cols-3" id="products-list">
+            <!-- Cards list here -->
           </div>
         </div>
       </div>
-    </section>
+    </div>
+  </section>
 
-    <script
-      src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
-      integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
-      crossorigin="anonymous"
-    ></script>
-    <script
-      src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
-      integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
-      crossorigin="anonymous"
-    ></script>
-    <script
-      src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"
-      integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI"
-      crossorigin="anonymous"
-    ></script>
-    <script src="data.js"></script>
-    <script src="app2.js"></script>
-  </body>
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+    integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous">
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+    integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous">
+  </script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"
+    integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous">
+  </script>
+  <script src="data.js"></script>
+  <script src="app2.js"></script>
+</body>
+
 </html>
