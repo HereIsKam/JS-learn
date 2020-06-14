@@ -34,35 +34,13 @@ appendCards(data);
 appendBrandList(data);
 appendPriceRange(data1, priceArray);
 
+//Appendeind wishlist cards
+wishListButton.addEventListener("click", function () {
+
+})
 
 //Adding item to wish-list
-productsList.addEventListener("click", wishListAddRemove(wishList, ));
-
-//Wishlist counter
-function wishListCounter(object, indicator) {
-  let storageLength = Object.entries(object).length;
-  indicator.setAttribute(`data-count`, storageLength);
-}
-
-//Wishlist adding/removing
-function wishListAddRemove(object) {
-  return function (e) {
-    if (e.target.classList.contains(`wish-btn`)) {
-      let id = e.target.dataset.id;
-      if (!object[id]) {
-        object[id] = true;
-        e.target.classList.remove(`btn-primary`);
-        e.target.classList.add(`btn-danger`);
-      } else {
-        delete object[id];
-        e.target.classList.add(`btn-primary`);
-        e.target.classList.remove(`btn-danger`);
-      }
-      localStorage.wish = JSON.stringify(object);
-    }
-    wishListCounter(object, wishListButton, `data-count`);
-  }
-}
+productsList.addEventListener("click", wishListAddRemove(wishList));
 
 //Sorting by price or rating, event
 selectSort.addEventListener("change", function (e) {
@@ -93,6 +71,32 @@ filterBtn.addEventListener("click", function (e) {
   });
   renderCards(filteredArray);
 });
+
+//Wishlist counter
+function wishListCounter(object, indicator) {
+  let storageLength = Object.keys(object).length;
+  indicator.setAttribute(`data-count`, storageLength);
+}
+
+//Wishlist adding/removing
+function wishListAddRemove(object) {
+  return function (e) {
+    if (e.target.classList.contains(`wish-btn`)) {
+      let id = e.target.dataset.id;
+      if (!object[id]) {
+        object[id] = true;
+        e.target.classList.remove(`btn-primary`);
+        e.target.classList.add(`btn-danger`);
+      } else {
+        delete object[id];
+        e.target.classList.add(`btn-primary`);
+        e.target.classList.remove(`btn-danger`);
+      }
+      localStorage.wish = JSON.stringify(object);
+    }
+    wishListCounter(object, wishListButton);
+  }
+}
 
 //Sorting by price or rating
 function sortingWrap(value) {
