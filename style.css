@@ -56,3 +56,7 @@ p {
 .filter-price input {
   width: 100%;
 }
+
+.wish-list::after {
+  content: attr(data-count);
+}

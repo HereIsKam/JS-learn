@@ -15,15 +15,11 @@ const filterPrice = document.getElementById("filterPrice");
 const priceArray = [];
 const filterObj = {
   brands: {},
-  // prices: {
-  //   from: priceFrom,
-  //   to: priceTo,
-  // },
+  prices: {
+    from: 0,
+    to: 0,
+  },
 };
-let priceFrom = document.getElementsByName('priceFilterFrom');
-let priceTo = document.getElementsByName('priceFilterTo')
-console.log(priceFrom);
-console.log(priceTo);
 
 
 
@@ -31,23 +27,36 @@ console.log(priceTo);
 if (!localStorage.wish) {
   localStorage.wish = JSON.stringify({});
 }
-const LSwish = JSON.parse(localStorage.wish);
+
 
 appendCards(data);
 appendBrandList(data);
 appendPriceRange(data1, priceArray);
 
+let count = +document.querySelector(`.wish-list`).dataset.count;
+console.log(count)
 //Adding item to wish-list
 productsList.addEventListener("click", function (e) {
   if (e.target.classList.contains("wish-btn")) {
     let id = e.target.dataset.id;
-    if (LSwish[id]) {
-      delete LSwish[id];
-    } else {
+    const LSwish = JSON.parse(localStorage.wish);
+
+    if (!LSwish[id]) {
       LSwish[id] = true;
+      e.target.classList.remove(`btn-primary`)
+      e.target.classList.add(`btn-danger`)
+      count = Number(count) + 1
+      console.log(count)
+    } else {
+      delete LSwish[id];
+      e.target.classList.add(`btn-primary`)
+      e.target.classList.remove(`btn-danger`)
+      count = count - 1
+      console.log(count)
     }
     localStorage.wish = JSON.stringify(LSwish);
   }
+
 });
 
 //Sorting by price or rating, event
@@ -233,25 +242,29 @@ function createCardTemplate(products) {
         <h6 class="card-title card-comments">Comments: ${
           products.comments_amount
         }</h6>
-        <button class="btn btn-success buy-btn">Buy</button>
-        <button class="btn btn-primary wish-btn" data-id="${
+        <div class="d-flex align-items-center">
+        <button class="btn btn-success buy-btn mr-2 border-0">Buy</button>
+        <button class="btn btn-primary wish-btn border-0 text-center" data-id="${
           products.id
         }">&#10084;</button>
+        </div>
       </div>
     </div>
   </div>`;
   return html;
 }
 
-let str111 =
-  'Экран 15.6" IPS (1920x1080) Full HD, матовый / Intel Core i5-9300H (2.4 - 4.1 ГГц) / RAM 8 ГБ / SSD 256 ГБ / nVidia GeForce GTX 1650, 4 ГБ / без ОД / LAN / Wi-Fi / Bluetooth / веб-камера / DOS / 2.32 кг / черный';
-
+//Adding to cart
 productsList.addEventListener("click", function (e) {
   if (e.target.classList.contains("buy-btn")) {
     const btn = e.target;
     btn.classList.add("disabled");
     btn.disabled = true;
-    btn.textContent = "В корзине";
+
+    event.target.innerHTML = `<a href="#" class="btn btn-primary m-0 border-0">В корзину</a>`;
+    event.target.classList.remove(`btn`, `btn-success`, `mr-2`);
+    event.target.classList.add(`border-0`, `p-0`, `mr-2`)
+
     const card = btn.closest(".card");
     const img = card.querySelector(".card-img-top");
     const title = card.querySelector(".card-name");
@@ -267,6 +280,8 @@ productsList.addEventListener("click", function (e) {
     refreshCartRowNumber(cartBody);
   }
 });
+
+//Changing quantity in basket
 cartBody.addEventListener("input", function (e) {
   if (e.target.classList.contains("count-input")) {
     const input = e.target;
@@ -281,6 +296,8 @@ cartBody.addEventListener("input", function (e) {
     sum.textContent = +input.value * +price;
   }
 });
+
+//Remove btn
 cartBody.addEventListener("click", function (e) {
   if (e.target.classList.contains("cart-row-remove-btn")) {
     const parentRow = e.target.closest(".cart-row");
@@ -294,7 +311,7 @@ cartBody.addEventListener("click", function (e) {
     cardBuyBtn.classList.remove("disabled");
   }
 });
-
+//Basket item rendering
 function renderCartRow(id, data) {
   let template = `<div class="row cart-row mb-3" data-id="${data.id}">
     <div class="col-1 cart-row-number">1</div>
@@ -313,7 +330,7 @@ function renderCartRow(id, data) {
   </div>`;
   id.insertAdjacentHTML("beforeend", template);
 }
-
+//Basket item's number
 function refreshCartRowNumber(id) {
   const rows = id.children;
   for (let i = 0; i < rows.length; i++) {
