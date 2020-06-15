@@ -35,9 +35,28 @@ appendBrandList(data);
 appendPriceRange(data1, priceArray);
 
 //Appendeind wishlist cards
-wishListButton.addEventListener("click", function () {
 
-})
+wishListButton.addEventListener("click", renderWishList(wishList, data1));
+
+
+function renderWishList(object, cards) {
+  return function (e) {
+    const localStorageKeys = Object.keys(object);
+    console.log(localStorageKeys);
+    let fav = []
+    let newCards = cards.filter(function (element) {
+      localStorageKeys.forEach(function (el) {
+        if (el.includes(element.id)) {
+          fav.push(element)
+        }
+      })
+    })
+    console.log(fav)
+    renderCards(fav)
+  }
+};
+
+
 
 //Adding item to wish-list
 productsList.addEventListener("click", wishListAddRemove(wishList));
