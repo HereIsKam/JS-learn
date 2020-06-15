@@ -35,7 +35,6 @@ appendBrandList(data);
 appendPriceRange(data1, priceArray);
 
 //Appendeind wishlist cards
-
 wishListButton.addEventListener("click", renderWishList(wishList, data1));
 
 
@@ -44,7 +43,7 @@ function renderWishList(object, cards) {
     const localStorageKeys = Object.keys(object);
     console.log(localStorageKeys);
     let fav = []
-    let newCards = cards.filter(function (element) {
+    cards.forEach(function (element) {
       localStorageKeys.forEach(function (el) {
         if (el.includes(element.id)) {
           fav.push(element)
@@ -53,6 +52,7 @@ function renderWishList(object, cards) {
     })
     console.log(fav)
     renderCards(fav)
+    // event.target.innerHTML = `<button class="btn btn-primary m-0 border-0">Назад</button>`;
   }
 };
 
