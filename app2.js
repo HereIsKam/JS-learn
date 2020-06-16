@@ -38,29 +38,22 @@ appendPriceRange(data1, priceArray);
 //Appendeind wishlist cards
 wishListButton.addEventListener("click", renderWishList(wishList, data1));
 
-
 function renderWishList(object, cards) {
   return function (e) {
-    // const localStorageKeys = Object.keys(object);
-    // console.log(localStorageKeys);
-    
-    // cards.forEach(function (element) {
-    //   localStorageKeys.forEach(function (el) {
-    //     if (el.includes(element.id)) {
-    //       fav.push(element)
-    //     }
-    //   })
-    // })
-    const array = cards.filter(function (element) {
-      return object[element.id];
-    })
-    console.log(array)
-    renderCards(array)
-    // event.target.innerHTML = `<button class="btn btn-primary m-0 border-0">Назад</button>`;
-  }
-};
-
-
+    if (!e.target.classList.contains("flag")) {
+      const array = cards.filter(function (element) {
+        return object[element.id];
+      });
+      renderCards(array);
+      e.target.classList.add("flag");
+      event.target.textContent = `Назад `;
+    } else {
+      e.target.classList.remove("flag");
+      event.target.textContent = `Избранное `;
+      renderCards(data1);
+    }
+  };
+}
 
 //Adding item to wish-list
 productsList.addEventListener("click", wishListAddRemove(wishList));
@@ -69,7 +62,7 @@ productsList.addEventListener("click", wishListAddRemove(wishList));
 selectSort.addEventListener("change", function (e) {
   let array = filteredArray.length ? filteredArray : data1;
   console.log(array);
-  
+
   array.sort(sortingWrap(e.target.value));
   renderCards(array);
 });
@@ -87,10 +80,11 @@ filterBrands.addEventListener("change", function (e) {
 filterBtn.addEventListener("click", function (e) {
   filteredArray = data1.filter(function (el) {
     let answer = false;
-    let brands = Object.keys(filterObj.brands).length ?
-      filterObj.brands[el.brand] :
-      true;
-    let prices = (+el.price >= filterObj.prices.from && +el.price <= filterObj.prices.to );
+    let brands = Object.keys(filterObj.brands).length
+      ? filterObj.brands[el.brand]
+      : true;
+    let prices =
+      +el.price >= filterObj.prices.from && +el.price <= filterObj.prices.to;
     if (brands && prices) {
       answer = true;
     }
@@ -122,7 +116,7 @@ function wishListAddRemove(object) {
       localStorage.wish = JSON.stringify(object);
     }
     wishListCounter(object, wishListButton);
-  }
+  };
 }
 
 //Sorting by price or rating
@@ -165,7 +159,6 @@ function appendBrandList(cards) {
 
 //Creating price range
 function appendPriceRange(cards, array) {
-
   // array = cards.map(item => item.price)
   // array.sort(function (a, b) {
   //   if (a > b) return 1;
@@ -177,25 +170,32 @@ function appendPriceRange(cards, array) {
   // filterPrice.insertAdjacentHTML("beforeend", template);
 
   cards.forEach(function (el) {
-    array.push(el.price)
-  })
+    array.push(el.price);
+  });
   array.sort(function (a, b) {
     return a - b;
-  })
+  });
   const template = createPriceRange(array);
   filterPrice.insertAdjacentHTML("beforeend", template);
 }
 
 // Creating price filter's range
 function createPriceRange(array) {
-  filterObj.prices.from = Math.min(...array)
-  filterObj.prices.to = Math.max(...array)
+  filterObj.prices.from = Math.min(...array);
+  filterObj.prices.to = Math.max(...array);
 
-  
   let html = `<label class="fiter-price">Цена от</label>
-  <input class="filter-price-from" placeholder="${array[0]}" type="number" value="${array[0]}" min="${array[0]}" max="${array[array.length - 1]}" name="priceFilterFrom"></input>
+  <input class="filter-price-from" placeholder="${
+    array[0]
+  }" type="number" value="${array[0]}" min="${array[0]}" max="${
+    array[array.length - 1]
+  }" name="priceFilterFrom"></input>
   <label class="fiter-price">до</label>
-  <input class="filter-price-to" placeholder="${array[array.length - 1]}" type="number" value="${array[array.length - 1]}" min="${array[1]}" max="${array[array.length - 1]}" name="priceFilterTo"></input>`;
+  <input class="filter-price-to" placeholder="${
+    array[array.length - 1]
+  }" type="number" value="${array[array.length - 1]}" min="${array[1]}" max="${
+    array[array.length - 1]
+  }" name="priceFilterTo"></input>`;
   return html;
 }
 
@@ -274,12 +274,16 @@ function createCardTemplate(products) {
           products.discount
         }%</h6>
         <h6 class="card-title card-id">Item Number: ${products.id}</h6>
-        <h6 class="card-title card-comments">Comments: ${products.comments_amount}</h6>
+        <h6 class="card-title card-comments">Comments: ${
+          products.comments_amount
+        }</h6>
         <div class="d-flex align-items-center">
         <button class="btn btn-success buy-btn mr-2 border-0">Buy</button>
-        <button class="btn ${wishList[products.id] ? 'btn-danger' : 'btn-primary'} wish-btn border-0 text-center" data-id="${
-          products.id
-        }">&#10084;</button>
+        <button class="btn ${
+          wishList[products.id] ? "btn-danger" : "btn-primary"
+        } wish-btn border-0 text-center" data-id="${
+    products.id
+  }">&#10084;</button>
         </div>
       </div>
     </div>
@@ -296,7 +300,7 @@ productsList.addEventListener("click", function (e) {
 
     event.target.innerHTML = `<a href="#cart" class="btn btn-primary m-0 border-0">В корзину</a>`;
     event.target.classList.remove(`btn`, `btn-success`, `mr-2`);
-    event.target.classList.add(`border-0`, `p-0`, `mr-2`)
+    event.target.classList.add(`border-0`, `p-0`, `mr-2`);
 
     const card = btn.closest(".card");
     const img = card.querySelector(".card-img-top");
