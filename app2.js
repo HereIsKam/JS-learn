@@ -12,6 +12,7 @@ const filterBrands = document.getElementById("filterBrands");
 const filterBtn = document.getElementById("filterBtn");
 const filterPrice = document.getElementById("filterPrice");
 const priceArray = [];
+let filteredArray = [];
 const filterObj = {
   brands: {},
   prices: {
@@ -40,18 +41,21 @@ wishListButton.addEventListener("click", renderWishList(wishList, data1));
 
 function renderWishList(object, cards) {
   return function (e) {
-    const localStorageKeys = Object.keys(object);
-    console.log(localStorageKeys);
-    let fav = []
-    cards.forEach(function (element) {
-      localStorageKeys.forEach(function (el) {
-        if (el.includes(element.id)) {
-          fav.push(element)
-        }
-      })
+    // const localStorageKeys = Object.keys(object);
+    // console.log(localStorageKeys);
+    
+    // cards.forEach(function (element) {
+    //   localStorageKeys.forEach(function (el) {
+    //     if (el.includes(element.id)) {
+    //       fav.push(element)
+    //     }
+    //   })
+    // })
+    const array = cards.filter(function (element) {
+      return object[element.id];
     })
-    console.log(fav)
-    renderCards(fav)
+    console.log(array)
+    renderCards(array)
     // event.target.innerHTML = `<button class="btn btn-primary m-0 border-0">Назад</button>`;
   }
 };
@@ -63,8 +67,11 @@ productsList.addEventListener("click", wishListAddRemove(wishList));
 
 //Sorting by price or rating, event
 selectSort.addEventListener("change", function (e) {
-  data1.sort(sortingWrap(e.target.value));
-  renderCards(data1);
+  let array = filteredArray.length ? filteredArray : data1;
+  console.log(array);
+  
+  array.sort(sortingWrap(e.target.value));
+  renderCards(array);
 });
 
 // Filter by brand name, event
@@ -78,12 +85,13 @@ filterBrands.addEventListener("change", function (e) {
 
 //Filter by brand name, button push
 filterBtn.addEventListener("click", function (e) {
-  let filteredArray = data1.filter(function (el) {
+  filteredArray = data1.filter(function (el) {
     let answer = false;
     let brands = Object.keys(filterObj.brands).length ?
-      Object.keys(filterObj.brands).includes(el.brand) :
+      filterObj.brands[el.brand] :
       true;
-    if (brands) {
+    let prices = (+el.price >= filterObj.prices.from && +el.price <= filterObj.prices.to );
+    if (brands && prices) {
       answer = true;
     }
     return answer;
@@ -172,20 +180,22 @@ function appendPriceRange(cards, array) {
     array.push(el.price)
   })
   array.sort(function (a, b) {
-    if (a > b) return 1;
-    if (a == b) return 0;
-    if (a < b) return -1;
+    return a - b;
   })
-  const template = createPriceRange(cards);
+  const template = createPriceRange(array);
   filterPrice.insertAdjacentHTML("beforeend", template);
 }
 
 // Creating price filter's range
-function createPriceRange(price) {
+function createPriceRange(array) {
+  filterObj.prices.from = Math.min(...array)
+  filterObj.prices.to = Math.max(...array)
+
+  
   let html = `<label class="fiter-price">Цена от</label>
-  <input class="filter-price-from" placeholder="${priceArray[0]}" type="number" value="${priceArray[0]}" min="${priceArray[0]}" max="${priceArray[price.length - 1]}" name="priceFilterFrom"></input>
+  <input class="filter-price-from" placeholder="${array[0]}" type="number" value="${array[0]}" min="${array[0]}" max="${array[array.length - 1]}" name="priceFilterFrom"></input>
   <label class="fiter-price">до</label>
-  <input class="filter-price-to" placeholder="${priceArray[price.length - 1]}" type="number" value="${priceArray[price.length - 1]}" min="${priceArray[1]}" max="${priceArray[price.length - 1]}" name="priceFilterTo"></input>`;
+  <input class="filter-price-to" placeholder="${array[array.length - 1]}" type="number" value="${array[array.length - 1]}" min="${array[1]}" max="${array[array.length - 1]}" name="priceFilterTo"></input>`;
   return html;
 }
 
@@ -284,7 +294,7 @@ productsList.addEventListener("click", function (e) {
     btn.classList.add("disabled");
     btn.disabled = true;
 
-    event.target.innerHTML = `<a href="#" class="btn btn-primary m-0 border-0">В корзину</a>`;
+    event.target.innerHTML = `<a href="#cart" class="btn btn-primary m-0 border-0">В корзину</a>`;
     event.target.classList.remove(`btn`, `btn-success`, `mr-2`);
     event.target.classList.add(`border-0`, `p-0`, `mr-2`)
 
