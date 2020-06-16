@@ -11,6 +11,7 @@ const filterForm = document.getElementById("filterForm");
 const filterBrands = document.getElementById("filterBrands");
 const filterBtn = document.getElementById("filterBtn");
 const filterPrice = document.getElementById("filterPrice");
+const wishListButton = document.getElementById(`wish-list`);
 const priceArray = [];
 let filteredArray = [];
 const filterObj = {
@@ -21,23 +22,36 @@ const filterObj = {
   },
 };
 
-const wishListButton = document.getElementById(`wish-list`);
-
-//creating local storage
+//Creating local storage
 if (!localStorage.wish) {
   localStorage.wish = JSON.stringify({});
 }
 const wishList = JSON.parse(localStorage.wish);
 
-//Calling functions
+///////  Calling functions
+
 wishListCounter(wishList, wishListButton);
 appendCards(data);
 appendBrandList(data);
 appendPriceRange(data1, priceArray);
 
+//////  Events
+
+//Adding item to wish-list
+productsList.addEventListener("click", wishListAddRemove(wishList));
+
 //Appendeind wishlist cards
 wishListButton.addEventListener("click", renderWishList(wishList, data1));
 
+//Sorting by price or rating
+selectSort.addEventListener("change", sortPriceRate(filteredArray));
+
+// Filter by brand/price
+filterBrands.addEventListener("change", addBrandFilter(filterObj));
+
+/////// Wish-list
+
+//Rendering wish-list
 function renderWishList(object, cards) {
   return function (e) {
     if (!e.target.classList.contains("flag")) {
@@ -54,44 +68,6 @@ function renderWishList(object, cards) {
     }
   };
 }
-
-//Adding item to wish-list
-productsList.addEventListener("click", wishListAddRemove(wishList));
-
-//Sorting by price or rating, event
-selectSort.addEventListener("change", function (e) {
-  let array = filteredArray.length ? filteredArray : data1;
-  console.log(array);
-
-  array.sort(sortingWrap(e.target.value));
-  renderCards(array);
-});
-
-// Filter by brand name, event
-filterBrands.addEventListener("change", function (e) {
-  if (!e.target.checked) {
-    delete filterObj.brands[e.target.value];
-  } else {
-    filterObj.brands[e.target.value] = true;
-  }
-});
-
-//Filter by brand name, button push
-filterBtn.addEventListener("click", function (e) {
-  filteredArray = data1.filter(function (el) {
-    let answer = false;
-    let brands = Object.keys(filterObj.brands).length
-      ? filterObj.brands[el.brand]
-      : true;
-    let prices =
-      +el.price >= filterObj.prices.from && +el.price <= filterObj.prices.to;
-    if (brands && prices) {
-      answer = true;
-    }
-    return answer;
-  });
-  renderCards(filteredArray);
-});
 
 //Wishlist counter
 function wishListCounter(object, indicator) {
@@ -119,6 +95,30 @@ function wishListAddRemove(object) {
   };
 }
 
+///////  Sorting and filtering
+
+//Sorting by price or rating, event cb
+function sortPriceRate(object) {
+  return function (e) {
+    let array = object.length ? filteredArray : data1;
+    console.log(array);
+
+    array.sort(sortingWrap(e.target.value));
+    renderCards(array);
+  };
+}
+
+// Filter by brand name, event cb
+function addBrandFilter(object) {
+  return function (e) {
+    if (!e.target.checked) {
+      delete object.brands[e.target.value];
+    } else {
+      object.brands[e.target.value] = true;
+    }
+  };
+}
+
 //Sorting by price or rating
 function sortingWrap(value) {
   let divider = value.indexOf("-");
@@ -131,12 +131,6 @@ function sortingWrap(value) {
       return collator.compare(b[key], a[key]);
     }
   };
-}
-
-//Clear old card-list and generate new
-function renderCards(new_data) {
-  productsList.innerHTML = "";
-  appendCards(new_data);
 }
 
 // Creating brand-checkbox list
@@ -157,18 +151,19 @@ function appendBrandList(cards) {
   });
 }
 
+//Creating brand-checkbox body
+function createBrandBody(brand) {
+  let html = `<div class="form-check d-flex flex-column" id="filterBrandCheckbox">
+  <input class="form-check-input" type="checkbox" name="${brand[0]}" value="${brand[0]}" id="filter-${brand[0]}">
+  <label class="form-check-label" for="filter-${brand[0]}">
+    ${brand[0]}(${brand[1]})
+  </label>
+</div>`;
+  return html;
+}
+
 //Creating price range
 function appendPriceRange(cards, array) {
-  // array = cards.map(item => item.price)
-  // array.sort(function (a, b) {
-  //   if (a > b) return 1;
-  //   if (a == b) return 0;
-  //   if (a < b) return -1;
-  // })
-  // console.log(array)
-  // const template = createPriceRange(cards);
-  // filterPrice.insertAdjacentHTML("beforeend", template);
-
   cards.forEach(function (el) {
     array.push(el.price);
   });
@@ -179,7 +174,7 @@ function appendPriceRange(cards, array) {
   filterPrice.insertAdjacentHTML("beforeend", template);
 }
 
-// Creating price filter's range
+// Creating price filter's body
 function createPriceRange(array) {
   filterObj.prices.from = Math.min(...array);
   filterObj.prices.to = Math.max(...array);
@@ -199,18 +194,32 @@ function createPriceRange(array) {
   return html;
 }
 
-//Creating brand-checkbox body
-function createBrandBody(brand) {
-  let html = `<div class="form-check d-flex flex-column" id="filterBrandCheckbox">
-  <input class="form-check-input" type="checkbox" name="${brand[0]}" value="${brand[0]}" id="filter-${brand[0]}">
-  <label class="form-check-label" for="filter-${brand[0]}">
-    ${brand[0]}(${brand[1]})
-  </label>
-</div>`;
-  return html;
+//Filtering by button push
+filterBtn.addEventListener("click", function (e) {
+  filteredArray = data1.filter(function (el) {
+    let answer = false;
+    let brands = Object.keys(filterObj.brands).length
+      ? filterObj.brands[el.brand]
+      : true;
+    let prices =
+      +el.price >= filterObj.prices.from && +el.price <= filterObj.prices.to;
+    if (brands && prices) {
+      answer = true;
+    }
+    return answer;
+  });
+  renderCards(filteredArray);
+});
+
+//////// Creating card-list
+
+//Clear old card-list and generate new
+function renderCards(new_data) {
+  productsList.innerHTML = "";
+  appendCards(new_data);
 }
 
-// Creating card list
+// Appending card list
 function appendCards(products) {
   for (let i = 0; i < products.length; i++) {
     const product = products[i];
@@ -291,6 +300,8 @@ function createCardTemplate(products) {
   return html;
 }
 
+/////////// Cart
+
 //Adding to cart
 productsList.addEventListener("click", function (e) {
   if (e.target.classList.contains("buy-btn")) {
@@ -318,7 +329,7 @@ productsList.addEventListener("click", function (e) {
   }
 });
 
-//Changing quantity in basket
+//Changing quantity in cart
 cartBody.addEventListener("input", function (e) {
   if (e.target.classList.contains("count-input")) {
     const input = e.target;
@@ -348,7 +359,7 @@ cartBody.addEventListener("click", function (e) {
     cardBuyBtn.classList.remove("disabled");
   }
 });
-//Basket item rendering
+//Cart item rendering
 function renderCartRow(id, data) {
   let template = `<div class="row cart-row mb-3" data-id="${data.id}">
     <div class="col-1 cart-row-number">1</div>
@@ -367,7 +378,8 @@ function renderCartRow(id, data) {
   </div>`;
   id.insertAdjacentHTML("beforeend", template);
 }
-//Basket item's number
+
+//Cart item's number
 function refreshCartRowNumber(id) {
   const rows = id.children;
   for (let i = 0; i < rows.length; i++) {
