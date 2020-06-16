@@ -12,6 +12,7 @@ const filterBrands = document.getElementById("filterBrands");
 const filterBtn = document.getElementById("filterBtn");
 const filterPrice = document.getElementById("filterPrice");
 const wishListButton = document.getElementById(`wish-list`);
+
 const priceArray = [];
 let filteredArray = [];
 const filterObj = {
@@ -37,10 +38,10 @@ appendPriceRange(data1, priceArray);
 
 //////  Events
 
-//Adding item to wish-list
+//Wishlist adding/removing items
 productsList.addEventListener("click", wishListAddRemove(wishList));
 
-//Appendeind wishlist cards
+//Rendering wish-list cards
 wishListButton.addEventListener("click", renderWishList(wishList, data1));
 
 //Sorting by price or rating
@@ -49,9 +50,20 @@ selectSort.addEventListener("change", sortPriceRate(filteredArray));
 // Filter by brand/price
 filterBrands.addEventListener("change", addBrandFilter(filterObj));
 
+//Filtering by button push
+filterBtn.addEventListener("click", filterPushButton(filterObj));
+
+//Adding to cart
+productsList.addEventListener("click", addToCart(productsList));
+
+//Changing quantity in cart
+cartBody.addEventListener("input", changeCartQuantity(cartBody));
+
+/////// Functions
+
 /////// Wish-list
 
-//Rendering wish-list
+//Rendering wish-list cards, event cb
 function renderWishList(object, cards) {
   return function (e) {
     if (!e.target.classList.contains("flag")) {
@@ -69,13 +81,7 @@ function renderWishList(object, cards) {
   };
 }
 
-//Wishlist counter
-function wishListCounter(object, indicator) {
-  let storageLength = Object.keys(object).length;
-  indicator.setAttribute(`data-count`, storageLength);
-}
-
-//Wishlist adding/removing
+//Wishlist adding/removing items, event cb
 function wishListAddRemove(object) {
   return function (e) {
     if (e.target.classList.contains(`wish-btn`)) {
@@ -93,6 +99,12 @@ function wishListAddRemove(object) {
     }
     wishListCounter(object, wishListButton);
   };
+}
+
+//Wishlist counter
+function wishListCounter(object, indicator) {
+  let storageLength = Object.keys(object).length;
+  indicator.setAttribute(`data-count`, storageLength);
 }
 
 ///////  Sorting and filtering
@@ -194,22 +206,23 @@ function createPriceRange(array) {
   return html;
 }
 
-//Filtering by button push
-filterBtn.addEventListener("click", function (e) {
-  filteredArray = data1.filter(function (el) {
-    let answer = false;
-    let brands = Object.keys(filterObj.brands).length
-      ? filterObj.brands[el.brand]
-      : true;
-    let prices =
-      +el.price >= filterObj.prices.from && +el.price <= filterObj.prices.to;
-    if (brands && prices) {
-      answer = true;
-    }
-    return answer;
-  });
-  renderCards(filteredArray);
-});
+//Filtering by button push, event cb
+function filterPushButton(object) {
+  return function (e) {
+    filteredArray = data1.filter(function (el) {
+      let answer = false;
+      let brands = Object.keys(object.brands).length ?
+        object.brands[el.brand] :
+        true;
+      let prices = +el.price >= object.prices.from && +el.price <= object.prices.to;
+      if (brands && prices) {
+        answer = true;
+      }
+      return answer;
+    });
+    renderCards(filteredArray);
+  };
+}
 
 //////// Creating card-list
 
@@ -287,7 +300,7 @@ function createCardTemplate(products) {
           products.comments_amount
         }</h6>
         <div class="d-flex align-items-center">
-        <button class="btn btn-success buy-btn mr-2 border-0">Buy</button>
+        <button class="btn btn-success buy-btn mr-2 border-0" id="btnCart">Buy</button>
         <button class="btn ${
           wishList[products.id] ? "btn-danger" : "btn-primary"
         } wish-btn border-0 text-center" data-id="${
@@ -302,50 +315,75 @@ function createCardTemplate(products) {
 
 /////////// Cart
 
-//Adding to cart
-productsList.addEventListener("click", function (e) {
-  if (e.target.classList.contains("buy-btn")) {
-    const btn = e.target;
-    btn.classList.add("disabled");
-    btn.disabled = true;
+let total = document.getElementById("cartFooterQtty");
+let totalPrice = document.getElementById("cartFooterPrice");
 
-    event.target.innerHTML = `<a href="#cart" class="btn btn-primary m-0 border-0">В корзину</a>`;
-    event.target.classList.remove(`btn`, `btn-success`, `mr-2`);
-    event.target.classList.add(`border-0`, `p-0`, `mr-2`);
+const totalQttyArray = [];
+let cartQttyTotal = 0;
+total.textContent = cartQttyTotal
 
-    const card = btn.closest(".card");
-    const img = card.querySelector(".card-img-top");
-    const title = card.querySelector(".card-name");
-    const price = card.querySelector(".card-price");
+//Adding to cart, event cb
+function addToCart(object) {
+  return function (e) {
+    if (e.target.classList.contains("buy-btn")) {
+      const btn = e.target;
+      btn.classList.add("disabled");
+      btn.disabled = true;
 
-    const product = {};
-    product.id = card.dataset.id;
-    product.img = img.src;
-    product.title = title.textContent;
-    product.price = price.dataset.price;
+      e.target.innerHTML = `<a href="#cart" class="btn btn-primary m-0 border-0">В корзину</a>`;
+      e.target.classList.remove(`btn`, `btn-success`, `mr-2`);
+      e.target.classList.add(`border-0`, `p-0`, `mr-2`);
 
-    renderCartRow(cartBody, product);
-    refreshCartRowNumber(cartBody);
-  }
-});
+      const card = btn.closest(".card");
+      const img = card.querySelector(".card-img-top");
+      const title = card.querySelector(".card-name");
+      const price = card.querySelector(".card-price");
 
-//Changing quantity in cart
-cartBody.addEventListener("input", function (e) {
-  if (e.target.classList.contains("count-input")) {
-    const input = e.target;
-    if (input.value < 1) {
-      input.value = 1;
-    } else if (input.value > 99) {
-      input.value = 99;
+      const product = {};
+      product.id = card.dataset.id;
+      product.img = img.src;
+      product.title = title.textContent;
+      product.price = price.dataset.price;
+
+      renderCartRow(cartBody, product);
+      refreshCartRowNumber(cartBody);
+
+      totalQttyArray.push(1);
+      countQtty(totalQttyArray);
     }
-    const parentRow = input.closest(".cart-row");
-    let price = parentRow.querySelector(".cart-row-price").dataset.price;
-    const sum = parentRow.querySelector(".cart-row-sum");
-    sum.textContent = +input.value * +price;
-  }
-});
+  };
+}
 
-//Remove btn
+function countQtty(array) {
+  let session = 0
+  for (let i = 0; i < array.length; i++) {
+    session += array[i];
+  }
+  cartQttyTotal = session
+  total.textContent = cartQttyTotal
+  console.log(cartQttyTotal);
+}
+
+
+//Changing quantity in cart, event cb
+function changeCartQuantity(object) {
+  return function (e) {
+    if (e.target.classList.contains("count-input")) {
+      const input = e.target;
+      if (input.value < 1) {
+        input.value = 1;
+      } else if (input.value > 99) {
+        input.value = 99;
+      }
+      const parentRow = input.closest(".cart-row");
+      let price = parentRow.querySelector(".cart-row-price").dataset.price;
+      const sum = parentRow.querySelector(".cart-row-sum");
+      sum.textContent = +input.value * +price;
+    }
+  };
+}
+
+//Remove btn, event
 cartBody.addEventListener("click", function (e) {
   if (e.target.classList.contains("cart-row-remove-btn")) {
     const parentRow = e.target.closest(".cart-row");
@@ -359,6 +397,7 @@ cartBody.addEventListener("click", function (e) {
     cardBuyBtn.classList.remove("disabled");
   }
 });
+
 //Cart item rendering
 function renderCartRow(id, data) {
   let template = `<div class="row cart-row mb-3" data-id="${data.id}">
