@@ -29,6 +29,11 @@ if (!localStorage.wish) {
 }
 const wishList = JSON.parse(localStorage.wish);
 
+if (!localStorage.cart) {
+  localStorage.cart = JSON.stringify({});
+}
+const cartList = JSON.parse(localStorage.cart);
+
 ///////  Calling functions
 
 wishListCounter(wishList, wishListButton);
@@ -54,10 +59,10 @@ filterBrands.addEventListener("change", addBrandFilter(filterObj));
 filterBtn.addEventListener("click", filterPushButton(filterObj));
 
 //Adding to cart
-productsList.addEventListener("click", addToCart(productsList));
+productsList.addEventListener("click", addToCart);
 
 //Changing quantity in cart
-cartBody.addEventListener("input", changeCartQuantity(cartBody));
+cartBody.addEventListener("input", changeCartQuantity)
 
 /////// Functions
 
@@ -315,72 +320,71 @@ function createCardTemplate(products) {
 
 /////////// Cart
 
-let total = document.getElementById("cartFooterQtty");
-let totalPrice = document.getElementById("cartFooterPrice");
+// let total = document.getElementById("cartFooterQtty");
+// let totalPrice = document.getElementById("cartFooterPrice");
 
-const totalQttyArray = [];
-let cartQttyTotal = 0;
-total.textContent = cartQttyTotal
+// const totalQttyArray = [];
+// let cartQttyTotal = 0;
+// total.textContent = cartQttyTotal
+
+// //Refresh qtty
+// function countQtty(array) {
+//   let session = 0
+//   for (let i = 0; i < array.length; i++) {
+//     session += array[i];
+//   }
+//   cartQttyTotal = session
+//   total.textContent = cartQttyTotal
+//   console.log(cartQttyTotal);
+// }
+
 
 //Adding to cart, event cb
-function addToCart(object) {
-  return function (e) {
-    if (e.target.classList.contains("buy-btn")) {
-      const btn = e.target;
-      btn.classList.add("disabled");
-      btn.disabled = true;
+function addToCart(e) {
+  if (e.target.classList.contains("buy-btn")) {
+    const btn = e.target;
+    btn.classList.add("disabled");
+    btn.disabled = true;
 
-      e.target.innerHTML = `<a href="#cart" class="btn btn-primary m-0 border-0">В корзину</a>`;
-      e.target.classList.remove(`btn`, `btn-success`, `mr-2`);
-      e.target.classList.add(`border-0`, `p-0`, `mr-2`);
+    e.target.innerHTML = `<a href="#cart" class="btn btn-primary m-0 border-0">В корзину</a>`;
+    e.target.classList.remove(`btn`, `btn-success`, `mr-2`);
+    e.target.classList.add(`border-0`, `p-0`, `mr-2`);
 
-      const card = btn.closest(".card");
-      const img = card.querySelector(".card-img-top");
-      const title = card.querySelector(".card-name");
-      const price = card.querySelector(".card-price");
+    const card = btn.closest(".card");
+    const img = card.querySelector(".card-img-top");
+    const title = card.querySelector(".card-name");
+    const price = card.querySelector(".card-price");
 
-      const product = {};
-      product.id = card.dataset.id;
-      product.img = img.src;
-      product.title = title.textContent;
-      product.price = price.dataset.price;
+    const product = {};
+    product.id = card.dataset.id;
+    product.img = img.src;
+    product.title = title.textContent;
+    product.price = price.dataset.price;
 
-      renderCartRow(cartBody, product);
-      refreshCartRowNumber(cartBody);
+    renderCartRow(cartBody, product);
+    refreshCartRowNumber(cartBody);
 
-      totalQttyArray.push(1);
-      countQtty(totalQttyArray);
-    }
+    // totalQttyArray.push(1);
+    // countQtty(totalQttyArray);
+
   };
-}
-
-function countQtty(array) {
-  let session = 0
-  for (let i = 0; i < array.length; i++) {
-    session += array[i];
-  }
-  cartQttyTotal = session
-  total.textContent = cartQttyTotal
-  console.log(cartQttyTotal);
 }
 
 
 //Changing quantity in cart, event cb
-function changeCartQuantity(object) {
-  return function (e) {
-    if (e.target.classList.contains("count-input")) {
-      const input = e.target;
-      if (input.value < 1) {
-        input.value = 1;
-      } else if (input.value > 99) {
-        input.value = 99;
-      }
-      const parentRow = input.closest(".cart-row");
-      let price = parentRow.querySelector(".cart-row-price").dataset.price;
-      const sum = parentRow.querySelector(".cart-row-sum");
-      sum.textContent = +input.value * +price;
+function changeCartQuantity(e) {
+  if (e.target.classList.contains("count-input")) {
+    const input = e.target;
+    if (input.value < 1) {
+      input.value = 1;
+    } else if (input.value > 99) {
+      input.value = 99;
     }
-  };
+    const parentRow = input.closest(".cart-row");
+    let price = parentRow.querySelector(".cart-row-price").dataset.price;
+    const sum = parentRow.querySelector(".cart-row-sum");
+    sum.textContent = +input.value * +price;
+  }
 }
 
 //Remove btn, event
