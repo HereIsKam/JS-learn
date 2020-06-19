@@ -23,7 +23,8 @@ const filterObj = {
   },
 };
 
-//Creating local storage
+//Creating local storages
+
 if (!localStorage.wish) {
   localStorage.wish = JSON.stringify({});
 }
