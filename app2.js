@@ -12,7 +12,6 @@ const filterBrands = document.getElementById("filterBrands");
 const filterBtn = document.getElementById("filterBtn");
 const filterPrice = document.getElementById("filterPrice");
 const wishListButton = document.getElementById(`wish-list`);
-
 const priceArray = [];
 let filteredArray = [];
 const filterObj = {
@@ -35,6 +34,8 @@ if (!localStorage.cart) {
 }
 const cartList = JSON.parse(localStorage.cart);
 
+const priceForm = document.getElementById("filterPrice");
+
 ///////  Calling functions
 
 wishListCounter(wishList, wishListButton);
@@ -53,8 +54,14 @@ wishListButton.addEventListener("click", renderWishList(wishList, data1));
 //Sorting by price or rating
 selectSort.addEventListener("change", sortPriceRate(filteredArray));
 
-// Filter by brand/price
+// Filter by brand
 filterBrands.addEventListener("change", addBrandFilter(filterObj));
+
+// Filter by price
+priceForm.addEventListener(
+  "change",
+  fillPriceRange(filterObj.prices, filterPrice, priceArray)
+);
 
 //Filtering by button push
 filterBtn.addEventListener("click", filterPushButton(filterObj));
@@ -63,7 +70,7 @@ filterBtn.addEventListener("click", filterPushButton(filterObj));
 productsList.addEventListener("click", addToCart);
 
 //Changing quantity in cart
-cartBody.addEventListener("input", changeCartQuantity)
+cartBody.addEventListener("input", changeCartQuantity);
 
 /////// Functions
 
@@ -180,6 +187,20 @@ function createBrandBody(brand) {
   return html;
 }
 
+// Filter by price, cb
+function fillPriceRange(object, form, array) {
+  return function (e) {
+    object.from = form.priceFilterFrom.value;
+    object.to = form.priceFilterTo.value;
+    if (form.priceFilterFrom.value < array[0]) {
+      form.priceFilterFrom.value = array[0];
+    }
+    if (form.priceFilterTo.value > array[array.length - 1]) {
+      form.priceFilterTo.value = array[array.length - 1];
+    }
+  };
+}
+
 //Creating price range
 function appendPriceRange(cards, array) {
   cards.forEach(function (el) {
@@ -188,28 +209,17 @@ function appendPriceRange(cards, array) {
   array.sort(function (a, b) {
     return a - b;
   });
-  const template = createPriceRange(array);
-  filterPrice.insertAdjacentHTML("beforeend", template);
+  createPriceRange(priceArray);
 }
 
-// Creating price filter's body
+// Creating price filter's parameters
 function createPriceRange(array) {
-  filterObj.prices.from = Math.min(...array);
-  filterObj.prices.to = Math.max(...array);
-
-  let html = `<label class="fiter-price">Цена от</label>
-  <input class="filter-price-from" placeholder="${
-    array[0]
-  }" type="number" value="${array[0]}" min="${array[0]}" max="${
-    array[array.length - 1]
-  }" name="priceFilterFrom"></input>
-  <label class="fiter-price">до</label>
-  <input class="filter-price-to" placeholder="${
-    array[array.length - 1]
-  }" type="number" value="${array[array.length - 1]}" min="${array[1]}" max="${
-    array[array.length - 1]
-  }" name="priceFilterTo"></input>`;
-  return html;
+  filterPrice.priceFilterFrom.value = array[0];
+  filterPrice.priceFilterFrom.min = array[0];
+  filterPrice.priceFilterFrom.max = array[array.length - 1] - 1;
+  filterPrice.priceFilterTo.value = array[array.length - 1];
+  filterPrice.priceFilterTo.min = array[0] + 1;
+  filterPrice.priceFilterTo.max = array[array.length - 1];
 }
 
 //Filtering by button push, event cb
@@ -217,10 +227,11 @@ function filterPushButton(object) {
   return function (e) {
     filteredArray = data1.filter(function (el) {
       let answer = false;
-      let brands = Object.keys(object.brands).length ?
-        object.brands[el.brand] :
-        true;
-      let prices = +el.price >= object.prices.from && +el.price <= object.prices.to;
+      let brands = Object.keys(object.brands).length
+        ? object.brands[el.brand]
+        : true;
+      let prices =
+        +el.price >= object.prices.from && +el.price <= object.prices.to;
       if (brands && prices) {
         answer = true;
       }
@@ -321,25 +332,6 @@ function createCardTemplate(products) {
 
 /////////// Cart
 
-// let total = document.getElementById("cartFooterQtty");
-// let totalPrice = document.getElementById("cartFooterPrice");
-
-// const totalQttyArray = [];
-// let cartQttyTotal = 0;
-// total.textContent = cartQttyTotal
-
-// //Refresh qtty
-// function countQtty(array) {
-//   let session = 0
-//   for (let i = 0; i < array.length; i++) {
-//     session += array[i];
-//   }
-//   cartQttyTotal = session
-//   total.textContent = cartQttyTotal
-//   console.log(cartQttyTotal);
-// }
-
-
 //Adding to cart, event cb
 function addToCart(e) {
   if (e.target.classList.contains("buy-btn")) {
@@ -364,13 +356,8 @@ function addToCart(e) {
 
     renderCartRow(cartBody, product);
     refreshCartRowNumber(cartBody);
-
-    // totalQttyArray.push(1);
-    // countQtty(totalQttyArray);
-
-  };
+  }
 }
-
 
 //Changing quantity in cart, event cb
 function changeCartQuantity(e) {
