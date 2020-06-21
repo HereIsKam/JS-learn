@@ -12,14 +12,20 @@ const filterBrands = document.getElementById("filterBrands");
 const filterBtn = document.getElementById("filterBtn");
 const filterPrice = document.getElementById("filterPrice");
 const wishListButton = document.getElementById(`wish-list`);
+const priceForm = document.getElementById("filterPrice");
+const filterAvail = document.getElementById("isAvailable")
 const priceArray = [];
 let filteredArray = [];
+
+appendPriceRange(data1, priceArray);
+
 const filterObj = {
   brands: {},
   prices: {
-    from: 0,
-    to: 0,
+    from: priceArray[0],
+    to: priceArray[priceArray.length - 1],
   },
+  available: {},
 };
 
 //Creating local storages
@@ -33,8 +39,6 @@ if (!localStorage.cart) {
   localStorage.cart = JSON.stringify({});
 }
 const cartList = JSON.parse(localStorage.cart);
-
-const priceForm = document.getElementById("filterPrice");
 
 ///////  Calling functions
 
@@ -56,6 +60,9 @@ selectSort.addEventListener("change", sortPriceRate(filteredArray));
 
 // Filter by brand
 filterBrands.addEventListener("change", addBrandFilter(filterObj));
+
+//Filter by status
+// filterAvail.addEventListener("change", addStatusFilter(filterObj));
 
 // Filter by price
 priceForm.addEventListener(
@@ -122,6 +129,20 @@ function wishListCounter(object, indicator) {
 
 ///////  Sorting and filtering
 
+//Sorting by price or rating
+function sortingWrap(value) {
+  let divider = value.indexOf("-");
+  let key = value.slice(0, divider);
+  let type = value.slice(divider + 1);
+  return function (a, b) {
+    if (type == "inc") {
+      return collator.compare(a[key], b[key]);
+    } else {
+      return collator.compare(b[key], a[key]);
+    }
+  };
+}
+
 //Sorting by price or rating, event cb
 function sortPriceRate(object) {
   return function (e) {
@@ -144,19 +165,15 @@ function addBrandFilter(object) {
   };
 }
 
-//Sorting by price or rating
-function sortingWrap(value) {
-  let divider = value.indexOf("-");
-  let key = value.slice(0, divider);
-  let type = value.slice(divider + 1);
-  return function (a, b) {
-    if (type == "inc") {
-      return collator.compare(a[key], b[key]);
-    } else {
-      return collator.compare(b[key], a[key]);
-    }
-  };
-}
+// function addStatusFilter(object) {
+//   return function (e) {
+//     if (!e.target.checked) {
+//       delete object.brands[e.target.value];
+//     } else {
+//       object.brands[e.target.value] = true;
+//     }
+//   };
+// }
 
 // Creating brand-checkbox list
 function appendBrandList(cards) {
@@ -209,7 +226,7 @@ function appendPriceRange(cards, array) {
   array.sort(function (a, b) {
     return a - b;
   });
-  createPriceRange(priceArray);
+  createPriceRange(array);
 }
 
 // Creating price filter's parameters
@@ -227,11 +244,13 @@ function filterPushButton(object) {
   return function (e) {
     filteredArray = data1.filter(function (el) {
       let answer = false;
-      let brands = Object.keys(object.brands).length
-        ? object.brands[el.brand]
-        : true;
-      let prices =
-        +el.price >= object.prices.from && +el.price <= object.prices.to;
+      let brands = Object.keys(object.brands).length ?
+        object.brands[el.brand] :
+        true;
+      let prices = +el.price >= object.prices.from && +el.price <= object.prices.to;
+      // let availability = Object.keys(object.available).length ?
+      //   object.available[el.sell_status] :
+      //   true;
       if (brands && prices) {
         answer = true;
       }
@@ -317,7 +336,9 @@ function createCardTemplate(products) {
           products.comments_amount
         }</h6>
         <div class="d-flex align-items-center">
-        <button class="btn btn-success buy-btn mr-2 border-0" id="btnCart">Buy</button>
+        <button class="btn btn-success buy-btn mr-2 border-0" id="btnCart" data-id="${
+          products.id
+        }">Buy</button>
         <button class="btn ${
           wishList[products.id] ? "btn-danger" : "btn-primary"
         } wish-btn border-0 text-center" data-id="${
@@ -356,6 +377,7 @@ function addToCart(e) {
 
     renderCartRow(cartBody, product);
     refreshCartRowNumber(cartBody);
+
   }
 }
 
