@@ -13,7 +13,8 @@ const filterBtn = document.getElementById("filterBtn");
 const filterPrice = document.getElementById("filterPrice");
 const wishListButton = document.getElementById(`wish-list`);
 const priceForm = document.getElementById("filterPrice");
-const filterAvail = document.getElementById("isAvailable")
+const filterAvail = document.getElementById("isAvailable");
+const cartFooter = document.getElementById("cartFooter")
 const priceArray = [];
 let filteredArray = [];
 
@@ -60,9 +61,6 @@ selectSort.addEventListener("change", sortPriceRate(filteredArray));
 
 // Filter by brand
 filterBrands.addEventListener("change", addBrandFilter(filterObj));
-
-//Filter by status
-// filterAvail.addEventListener("change", addStatusFilter(filterObj));
 
 // Filter by price
 priceForm.addEventListener(
@@ -168,7 +166,7 @@ function addBrandFilter(object) {
 // function addStatusFilter(object) {
 //   return function (e) {
 //     if (!e.target.checked) {
-//       delete object.brands[e.target.value];
+//       delete object.sell_status[e.target.value];
 //     } else {
 //       object.brands[e.target.value] = true;
 //     }
@@ -395,6 +393,8 @@ function changeCartQuantity(e) {
     const sum = parentRow.querySelector(".cart-row-sum");
     sum.textContent = +input.value * +price;
   }
+
+  countCartItems()
 }
 
 //Remove btn, event
@@ -410,12 +410,14 @@ cartBody.addEventListener("click", function (e) {
     cardBuyBtn.disabled = false;
     cardBuyBtn.classList.remove("disabled");
   }
+
+  countCartItems()
 });
 
 //Cart item rendering
 function renderCartRow(id, data) {
   let template = `<div class="row cart-row mb-3" data-id="${data.id}">
-    <div class="col-1 cart-row-number">1</div>
+    <div class="col-1 cart-row-number">#</div>
     <div class="col-1 cart-row-img">
       <img src="${data.img}" alt="${data.title}" class="img-fluid">
     </div>
@@ -424,12 +426,38 @@ function renderCartRow(id, data) {
     <div class="col-1 cart-row-count">
       <input class="count-input" type="number" value="1" min="1" max="99">
     </div>
-    <div class="col-2 cart-row-sum">${data.price}</div>
+    <div class="col-2 cart-row-sum" data-price="${data.price}">${data.price}</div>
     <div class="col-1 cart-row-remove">
       <button class="btn btn-danger btn-sm cart-row-remove-btn">&times;</button>
     </div>
   </div>`;
   id.insertAdjacentHTML("beforeend", template);
+
+  countCartItems()
+}
+
+// Count cart items
+function countCartItems() {
+  const findAllSum = cartBody.querySelectorAll(`.cart-row-sum`)
+  const findAllQtty = cartBody.querySelectorAll(`.count-input`)
+  const insertSum = cartFooter.querySelector(`.cart-footer-price`)
+  const isertQtty = cartFooter.querySelector(`.cart-footer-qtty`)
+
+  let newSum = 0
+  for (let i = 0; i < findAllSum.length; i++) {
+    const element = findAllSum[i];
+    newSum += Number(element.textContent);
+  }
+
+  let newQtty = 0
+  for (let i = 0; i < findAllQtty.length; i++) {
+    const element = findAllQtty[i];
+    newQtty += Number(element.value)
+  }
+
+  insertSum.textContent = newSum
+  isertQtty.textContent = newQtty
+
 }
 
 //Cart item's number

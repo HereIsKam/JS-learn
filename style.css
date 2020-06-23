@@ -61,3 +61,18 @@ p {
 .wish-list::after {
   content: attr(data-count);
 }
+
+/* .cart-body {
+  counter-reset: element;
+}
+
+.cart-row-number {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  counter-increment: element;
+}
+
+.cart-row-number::after {
+  content: counter(element);
+} */
