@@ -13,7 +13,7 @@ const filterBtn = document.getElementById("filterBtn");
 const filterPrice = document.getElementById("filterPrice");
 const wishListButton = document.getElementById(`wish-list`);
 const priceForm = document.getElementById("filterPrice");
-const filterAvail = document.getElementById("isAvailable");
+const filterAvail = document.getElementById("filterAvailable");
 const cartFooter = document.getElementById("cartFooter")
 const priceArray = [];
 let filteredArray = [];
@@ -61,6 +61,9 @@ selectSort.addEventListener("change", sortPriceRate(filteredArray));
 
 // Filter by brand
 filterBrands.addEventListener("change", addBrandFilter(filterObj));
+
+// Filter by availability
+// filterAvail.addEventListener("change", addStatusFilter(filterObj));
 
 // Filter by price
 priceForm.addEventListener(
@@ -165,13 +168,15 @@ function addBrandFilter(object) {
 
 // function addStatusFilter(object) {
 //   return function (e) {
-//     if (!e.target.checked) {
-//       delete object.sell_status[e.target.value];
-//     } else {
-//       object.brands[e.target.value] = true;
+//     if (e.target.checked) {
+//       if (data1.sell_status == 'none') {
+//         delete object.sell_status
+//       }
 //     }
-//   };
+//   }
 // }
+
+
 
 // Creating brand-checkbox list
 function appendBrandList(cards) {
@@ -246,9 +251,7 @@ function filterPushButton(object) {
         object.brands[el.brand] :
         true;
       let prices = +el.price >= object.prices.from && +el.price <= object.prices.to;
-      // let availability = Object.keys(object.available).length ?
-      //   object.available[el.sell_status] :
-      //   true;
+
       if (brands && prices) {
         answer = true;
       }
